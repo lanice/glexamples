@@ -43,10 +43,12 @@ const std::vector<Line *> & DataSet::lines() const
 
 void DataSet::add(Node * node)
 {
+    node->setId(m_nextId++);
     m_nodes.push_back(node);
 }
 
 void DataSet::add(Line * line)
 {
+    line->setId(m_nextId++);
     m_lines.push_back(line);
 }

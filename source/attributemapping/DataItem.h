@@ -38,6 +38,15 @@ public:
 
     /**
     *  @brief
+    *    Set ID
+    *
+    *  @param id
+    *    Item ID
+    */
+    void setId(uint32_t id);
+
+    /**
+    *  @brief
     *    Get attribute value
     *
     *  @param[in] index

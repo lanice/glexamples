@@ -11,6 +11,16 @@ DataItem::~DataItem()
 {
 }
 
+uint32_t DataItem::id() const
+{
+    return m_id;
+}
+
+void DataItem::setId(uint32_t id)
+{
+    m_id = id;
+}
+
 float DataItem::attribute(size_t index) const
 {
     // Check index
@@ -31,9 +41,4 @@ void DataItem::setAttribute(size_t index, float value)
 
     // Set attribute
     m_attrs[index] = value;
-}
-
-uint32_t DataItem::id() const
-{
-    return m_id;
 }
