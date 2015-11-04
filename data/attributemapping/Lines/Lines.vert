@@ -42,17 +42,7 @@ flat out int   v_lineId;   // Line ID
 // Imported functions
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-vec4 calculatePosition(vec3 inVector)
-{
-    return vec4(inVector, 1.0);
-}
-
-/*
-float filterAttrs(int nodeIndex, int edgeIndex);
-float filterTimespan1(float time);
-float filterTimespan2(float time);
-float filterTimespan3(float time);
-*/
+vec4  calculatePosition(vec3 inVector);
 float attributeValue(int nodeIndex, int edgeIndex, int attr);
 float normalizedAttribute(int nodeIndex, int edgeIndex, int attr);
 
