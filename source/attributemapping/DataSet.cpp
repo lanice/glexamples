@@ -52,3 +52,23 @@ void DataSet::add(Line * line)
     line->setId(m_nextId++);
     m_lines.push_back(line);
 }
+
+const std::vector<std::string> & DataSet::nodeAttributes() const
+{
+    return m_nodeAttributes;
+}
+
+void DataSet::setNodeAttributes(const std::vector<std::string> & attributes)
+{
+    m_nodeAttributes = attributes;
+}
+
+const std::vector<std::string> & DataSet::lineAttributes() const
+{
+    return m_lineAttributes;
+}
+
+void DataSet::setLineAttributes(const std::vector<std::string> & attributes)
+{
+    m_lineAttributes = attributes;
+}

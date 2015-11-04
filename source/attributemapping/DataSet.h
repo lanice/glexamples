@@ -3,6 +3,7 @@
 
 
 #include <vector>
+#include <string>
 
 #include <glm/glm.hpp>
 
@@ -72,9 +73,47 @@ public:
     */
     void add(Line * line);
 
+    /**
+    *  @brief
+    *    Get node attributes
+    *
+    *  @return
+    *    Attribute names
+    */
+    const std::vector<std::string> & nodeAttributes() const;
+
+    /**
+    *  @brief
+    *    Set node attributes
+    *
+    *  @param[in] attributes
+    *    Attribute names
+    */
+    void setNodeAttributes(const std::vector<std::string> & attributes);
+
+    /**
+    *  @brief
+    *    Get line attributes
+    *
+    *  @return
+    *    Attribute names
+    */
+    const std::vector<std::string> & lineAttributes() const;
+
+    /**
+    *  @brief
+    *    Set line attributes
+    *
+    *  @param[in] attributes
+    *    Attribute names
+    */
+    void setLineAttributes(const std::vector<std::string> & attributes);
+
 
 protected:
-    std::vector<Node *> m_nodes;    ///< List of nodes
-    std::vector<Line *> m_lines;    ///< List of lines
-    uint32_t            m_nextId;   ///< Next free item ID
+    std::vector<Node *>      m_nodes;           ///< List of nodes
+    std::vector<Line *>      m_lines;           ///< List of lines
+    uint32_t                 m_nextId;          ///< Next free item ID
+    std::vector<std::string> m_nodeAttributes;  ///< List of node attributes
+    std::vector<std::string> m_lineAttributes;  ///< List of line attributes
 };

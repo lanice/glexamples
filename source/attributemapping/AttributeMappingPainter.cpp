@@ -1,5 +1,5 @@
 
-#include "AttributeMapping.h"
+#include "AttributeMappingPainter.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
@@ -27,7 +27,7 @@ using namespace glm;
 using namespace globjects;
 
 
-AttributeMapping::AttributeMapping(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo)
+AttributeMappingPainter::AttributeMappingPainter(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo)
 : Painter("AttributeMapping", resourceManager, pluginInfo)
 , m_targetFramebufferCapability(addCapability(new gloperate::TargetFramebufferCapability()))
 , m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
@@ -35,13 +35,55 @@ AttributeMapping::AttributeMapping(gloperate::ResourceManager & resourceManager,
 , m_cameraCapability(addCapability(new gloperate::CameraCapability()))
 , m_dataSet(nullptr)
 {
+    // Register properties
+//  addProperty<ColorMap>("ColorMap", this, &AttributeMappingPainter::getColorMap, &AttributeMappingPainter::setColorMap);
+//  PropertyGroup::property("ColorMap")->setOption("title", "Color map");
+
+    addProperty<std::string>("LineColor", this, &AttributeMappingPainter::getLineColor, &AttributeMappingPainter::setLineColor);
+    PropertyGroup::property("LineColor")->setOption("choices", std::vector<std::string>());
+
+    addProperty<std::string>("LineWidth",  this, &AttributeMappingPainter::getLineWidth,  &AttributeMappingPainter::setLineWidth);
+    PropertyGroup::property("LineWidth")->setOption("choices", std::vector<std::string>());
+
+    addProperty<std::string>("NodeHeight", this, &AttributeMappingPainter::getNodeHeight,  &AttributeMappingPainter::setNodeHeight);
+    PropertyGroup::property("NodeHeight")->setOption("choices", std::vector<std::string>());
 }
 
-AttributeMapping::~AttributeMapping()
+AttributeMappingPainter::~AttributeMappingPainter()
 {
 }
 
-void AttributeMapping::onInitialize()
+std::string AttributeMappingPainter::getLineColor() const
+{
+    return m_lineColor;
+}
+
+void AttributeMappingPainter::setLineColor(const std::string & attr)
+{
+    m_lineColor = attr;
+}
+
+std::string AttributeMappingPainter::getLineWidth() const
+{
+    return m_lineWidth;
+}
+
+void AttributeMappingPainter::setLineWidth(const std::string & attr)
+{
+    m_lineWidth = attr;
+}
+
+std::string AttributeMappingPainter::getNodeHeight() const
+{
+    return m_nodeHeight;
+}
+
+void AttributeMappingPainter::setNodeHeight(const std::string & attr)
+{
+    m_nodeHeight = attr;
+}
+
+void AttributeMappingPainter::onInitialize()
 {
     // Apply fix for apple
 #ifdef __APPLE__
@@ -79,7 +121,7 @@ void AttributeMapping::onInitialize()
     generateTestData();
 }
 
-void AttributeMapping::onPaint()
+void AttributeMappingPainter::onPaint()
 {
     // Update viewport
     if (m_viewportCapability->hasChanged())
@@ -127,7 +169,7 @@ void AttributeMapping::onPaint()
     Framebuffer::unbind(GL_FRAMEBUFFER);
 }
 
-void AttributeMapping::generateTestData()
+void AttributeMappingPainter::generateTestData()
 {
     // Destroy old data
     if (m_dataSet) {
@@ -172,4 +214,8 @@ void AttributeMapping::generateTestData()
     // Create geometry
     m_lineGeometry = new LineGeometry();
     m_lineGeometry->setData(*m_dataSet);
+
+    // Create attribute storage
+    m_attrStorage = new AttributeStorage();
+    m_attrStorage->setData(*m_dataSet);
 }

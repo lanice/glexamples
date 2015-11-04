@@ -59,7 +59,8 @@ float normalizedAttribute(int nodeIndex, int edgeIndex, int attr);
 
 void main(void)
 {
-/*
+    // [TODO]
+    /*
     // Get height
     float h = position.z;
     if (nodeHeight > -1) {
@@ -76,7 +77,8 @@ void main(void)
     v_visible   = filterTimespan1(attrs.z) * filterAttrs(int(attrs.x), int(attrs.y));
     v_color     = normalizedAttribute(int(attrs.x), int(attrs.y), lineColor);
     v_width     = normalizedAttribute(int(attrs.x), int(attrs.y), lineWidth);
-*/
+    */
+
     v_latlon    = position.xyz;
     v_pos       = v_latlon.xyz;
     v_nodeId    = int(attrs.x);

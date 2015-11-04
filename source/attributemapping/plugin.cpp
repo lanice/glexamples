@@ -1,12 +1,12 @@
 #include <gloperate/plugin/plugin_api.h>
 
-#include "AttributeMapping.h"
+#include "AttributeMappingPainter.h"
 
 #include <glexamples-version.h>
 
 GLOPERATE_PLUGIN_LIBRARY
 
-    GLOPERATE_PAINTER_PLUGIN(AttributeMapping
+    GLOPERATE_PAINTER_PLUGIN(AttributeMappingPainter
     , "AttributeMapping"
     , "Hardware-Accelerate Attribute Mapping Example"
     , GLEXAMPLES_AUTHOR_ORGANIZATION

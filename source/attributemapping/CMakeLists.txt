@@ -37,8 +37,9 @@ set(source_path "${CMAKE_CURRENT_SOURCE_DIR}/")
 
 set(sources
     ${source_path}/plugin.cpp
-    ${source_path}/AttributeMapping.cpp
+    ${source_path}/AttributeMappingPainter.cpp
     ${source_path}/LineGeometry.cpp
+    ${source_path}/AttributeStorage.cpp
     ${source_path}/DataSet.cpp
     ${source_path}/DataItem.cpp
     ${source_path}/Node.cpp
@@ -46,8 +47,9 @@ set(sources
 )
 
 set(api_includes
-    ${include_path}/AttributeMapping.h
+    ${include_path}/AttributeMappingPainter.h
     ${include_path}/LineGeometry.h
+    ${include_path}/AttributeStorage.h
     ${include_path}/DataSet.h
     ${include_path}/DataItem.h
     ${include_path}/Node.h

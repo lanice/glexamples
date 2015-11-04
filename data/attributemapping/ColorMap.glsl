@@ -6,6 +6,7 @@
 uniform sampler1D colorMap;
 
 
+// [TODO] Hard-coded color map function
 vec4 mapColor(float v)
 {
     vec4 c0 = vec4(0.0, 0.0, 1.0, 1.0);
