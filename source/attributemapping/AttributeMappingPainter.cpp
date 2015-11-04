@@ -36,7 +36,7 @@ AttributeMappingPainter::AttributeMappingPainter(gloperate::ResourceManager & re
 , m_dataSet(nullptr)
 , m_lineColor("Zero")
 , m_lineWidth("Zero")
-, m_nodeHeight("PosZ")
+, m_nodeHeight("None")
 {
     // Register properties
 //  addProperty<ColorMap>("ColorMap", this, &AttributeMappingPainter::getColorMap, &AttributeMappingPainter::setColorMap);
@@ -103,9 +103,9 @@ void AttributeMappingPainter::onInitialize()
     // Create program
     m_program = new Program();
     m_program->attach(
-        Shader::fromFile(GL_VERTEX_SHADER,   "data/attributemapping/Lines.vert"),
-        Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/Lines.geom"),
-        Shader::fromFile(GL_FRAGMENT_SHADER, "data/attributemapping/Lines.frag"),
+        Shader::fromFile(GL_VERTEX_SHADER,   "data/attributemapping/Lines/Lines.vert"),
+        Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/Lines/Lines.geom"),
+        Shader::fromFile(GL_FRAGMENT_SHADER, "data/attributemapping/Lines/Lines.frag"),
         Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/ScreenSize.glsl"),
         Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/ColorMap.glsl"),
         Shader::fromFile(GL_VERTEX_SHADER,   "data/attributemapping/Attributes.glsl")

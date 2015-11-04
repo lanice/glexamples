@@ -19,13 +19,13 @@ uniform mat4 modelViewProjectionMatrix;
 // Input from vertex shader
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-flat in int   v_nodeId[4];  // Node ID
-flat in int   v_lineId[4];  // Line ID
-     in vec3  v_pos[4];     // Position (world space)
-     in vec3  v_latlon[4];  // Position (lat/lon/height)
-     in float v_visible[4]; // Line visiblity
-     in float v_color[4];   // Line color (0..1, mapped on color map)
-     in float v_width[4];   // Line width (0..1)
+flat in int   v_nodeId[4];   // Node ID
+flat in int   v_lineId[4];   // Line ID
+     in vec3  v_pos[4];      // Position (world space)
+     in vec3  v_inVector[4]; // Position (lat/lon/height)
+     in float v_visible[4];  // Line visiblity
+     in float v_color[4];    // Line color (0..1, mapped on color map)
+     in float v_width[4];    // Line width (0..1)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -70,10 +70,10 @@ void main(void)
         float t = float(i) / float(numParts);
 
         // interpolate position and attributes
-        vec3  pos   = mix(v_pos   [1]  , v_pos   [2]  , t);
-        float h     = mix(v_latlon[1].z, v_latlon[2].z, t);
-        float width = mix(v_width [1]  , v_width [2]  , t);
-        float color = mix(v_color [1]  , v_color [2]  , t);
+        vec3  pos   = mix(v_pos     [1]  , v_pos     [2]  , t);
+        float h     = mix(v_inVector[1].z, v_inVector[2].z, t);
+        float width = mix(v_width   [1]  , v_width   [2]  , t);
+        float color = mix(v_color   [1]  , v_color   [2]  , t);
 
         // correct height, add arc
 //        pos = correctHeight(pos, h);
