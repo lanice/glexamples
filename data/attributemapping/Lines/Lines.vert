@@ -18,7 +18,7 @@ uniform int nodeHeight = -1;
 // Input data
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Input vector (x/y/z), might be the position or can be transformed to a position
+// Input vector (x/y/z) that is transformed into an actual 3D-position
 layout (location = 0) in vec4 position;
 
 // Node-ID / Line-ID / Time / -
