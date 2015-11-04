@@ -246,8 +246,6 @@ void AttributeStorage::setData(const DataSet & dataset)
     // Save number of static and node attributes
     m_numNodeAttributes = numStaticAttrs + numNodeAttrs;
 
-
-
     // Add line attributes
     const std::vector<std::string> & lineAttrs = dataset.lineAttributes();
     int numLineAttrs = lineAttrs.size();

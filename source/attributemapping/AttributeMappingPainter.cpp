@@ -34,6 +34,9 @@ AttributeMappingPainter::AttributeMappingPainter(gloperate::ResourceManager & re
 , m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
 , m_cameraCapability(addCapability(new gloperate::CameraCapability()))
 , m_dataSet(nullptr)
+, m_lineColor("Zero")
+, m_lineWidth("Zero")
+, m_nodeHeight("PosZ")
 {
     // Register properties
 //  addProperty<ColorMap>("ColorMap", this, &AttributeMappingPainter::getColorMap, &AttributeMappingPainter::setColorMap);
@@ -104,7 +107,8 @@ void AttributeMappingPainter::onInitialize()
         Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/Lines.geom"),
         Shader::fromFile(GL_FRAGMENT_SHADER, "data/attributemapping/Lines.frag"),
         Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/ScreenSize.glsl"),
-        Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/ColorMap.glsl")
+        Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/ColorMap.glsl"),
+        Shader::fromFile(GL_VERTEX_SHADER,   "data/attributemapping/Attributes.glsl")
     );
 
     // Initialize camera
@@ -158,10 +162,20 @@ void AttributeMappingPainter::onPaint()
     m_grid->update(eye, modelViewProjection);
     m_grid->draw();
 
-    // Render sphere
+    // Bind attribute texture
+    m_attrStorage->texture()->bindActive(gl::GL_TEXTURE0);
+    gl::glActiveTexture(gl::GL_TEXTURE0);
+    m_attrStorage->texture()->bind();
+    m_program->setUniform("attributes", 0);
+
+    // Render lines
     m_program->use();
-    m_program->setUniform("screenSize", glm::vec2(m_viewportCapability->width(), m_viewportCapability->height()));
+    m_program->setUniform("screenSize",                glm::vec2(m_viewportCapability->width(), m_viewportCapability->height()));
     m_program->setUniform("modelViewProjectionMatrix", modelViewProjection);
+    m_program->setUniform("lineColor",                 (int)(std::find(m_attributes.begin(), m_attributes.end(), m_lineColor)  - m_attributes.begin()) - 1);
+    m_program->setUniform("lineWidth",                 (int)(std::find(m_attributes.begin(), m_attributes.end(), m_lineWidth)  - m_attributes.begin()) - 1);
+    m_program->setUniform("nodeHeight",                (int)(std::find(m_attributes.begin(), m_attributes.end(), m_nodeHeight) - m_attributes.begin()) - 1);
+    m_program->setUniform("numNodeAttributes",         m_attrStorage->numNodeAttributes());
     m_lineGeometry->draw();
     m_program->release();
 
@@ -218,4 +232,11 @@ void AttributeMappingPainter::generateTestData()
     // Create attribute storage
     m_attrStorage = new AttributeStorage();
     m_attrStorage->setData(*m_dataSet);
+
+    // Update attribute choices
+    m_attributes = m_attrStorage->attributes();
+    m_attributes.insert(m_attributes.begin(), "None");
+    PropertyGroup::property("LineColor") ->setOption("choices", m_attributes);
+    PropertyGroup::property("LineWidth") ->setOption("choices", m_attributes);
+    PropertyGroup::property("NodeHeight")->setOption("choices", m_attributes);
 }

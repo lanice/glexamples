@@ -2,6 +2,7 @@
 #pragma once
 
 
+#include <vector>
 #include <string>
 
 #include <globjects/base/ref_ptr.h>
@@ -72,4 +73,5 @@ protected:
     std::string                                          m_lineColor;   ///< Name of attribute that is mapped to color
     std::string                                          m_lineWidth;   ///< Name of attribute that is mapped to width
     std::string                                          m_nodeHeight;  ///< Name of attribute that is mapped to height
+    std::vector<std::string>                             m_attributes;  ///< List of available attributes
 };

@@ -48,9 +48,9 @@ float filterAttrs(int nodeIndex, int edgeIndex);
 float filterTimespan1(float time);
 float filterTimespan2(float time);
 float filterTimespan3(float time);
+*/
 float attributeValue(int nodeIndex, int edgeIndex, int attr);
 float normalizedAttribute(int nodeIndex, int edgeIndex, int attr);
-*/
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84,6 +84,6 @@ void main(void)
     v_nodeId    = int(attrs.x);
     v_lineId    = int(attrs.y);
     v_visible   = 1.0;
-    v_color     = 1.0;
-    v_width     = 1.0;
+    v_color     = normalizedAttribute(int(attrs.x), int(attrs.y), lineColor);
+    v_width     = normalizedAttribute(int(attrs.x), int(attrs.y), lineWidth);
 }
