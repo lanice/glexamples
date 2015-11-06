@@ -149,28 +149,28 @@ float filterTimespan3(float time);
 // Get config value for vertex <index> (either direct value or mapped to attribute)
 //   if input >= 0, the value itself is the config value
 //   if input <  0, the value of attribute[-input] is used
-float configValue(int nodeIndex, int lineIndex, float input)
+float configValue(int nodeIndex, int lineIndex, float inputValue)
 {
-    if (input >= 0.0) {
-        return input;
+    if (inputValue >= 0.0) {
+        return inputValue;
     } else {
-        float value = attributeValue(nodeIndex, lineIndex, int(-input) - 1);
+        float value = attributeValue(nodeIndex, lineIndex, int(-inputValue) - 1);
 
         // Space-Time Cube
-        if (input == -8.0) {
-            value -= minAttributeValue(int(-input) - 1) + timeSpan1.x * 1.0;
+        if (inputValue == -8.0) {
+            value -= minAttributeValue(int(-inputValue) - 1) + timeSpan1.x * 1.0;
         }
 
         return value;
     }
 }
 
-float normalizedConfigValue(int nodeIndex, int lineIndex, float input)
+float normalizedConfigValue(int nodeIndex, int lineIndex, float inputValue)
 {
-    if (input >= 0.0) {
-        return input;
+    if (inputValue >= 0.0) {
+        return inputValue;
     } else {
-        float value = normalizedAttribute(nodeIndex, lineIndex, int(-input) - 1);
+        float value = normalizedAttribute(nodeIndex, lineIndex, int(-inputValue) - 1);
         return value;
     }
 }
