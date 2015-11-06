@@ -143,6 +143,7 @@ void AttributeMappingPainter::onInitialize()
         Shader::fromFile(GL_FRAGMENT_SHADER, "data/attributemapping/shaders/lines/Lines.frag"),
         Shader::fromFile(GL_VERTEX_SHADER,   "data/attributemapping/shaders/Position.glsl"),
         Shader::fromFile(GL_VERTEX_SHADER,   "data/attributemapping/shaders/Attributes.glsl"),
+        Shader::fromFile(GL_VERTEX_SHADER,   "data/attributemapping/shaders/Filtering.glsl"),
         Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/ScreenSize.glsl"),
         Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/ColorMap.glsl")
     );

@@ -136,6 +136,10 @@ float minAttributeValue(int attr);
 float attributeValue(int nodeIndex, int edgeIndex, int attr);
 float normalizedAttribute(int nodeIndex, int edgeIndex, int attr);
 float getLinearDepth(vec4 pos);
+float filterAttrs(int nodeIndex, int edgeIndex);
+float filterTimespan1(float time);
+float filterTimespan2(float time);
+float filterTimespan3(float time);
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -387,11 +391,11 @@ void main()
     bool  visible = true;
 
     // Attribute filtering
-    visible = true;
+    visible = (filterAttrs(int(nodeId), int(lineId)) > 0.0);
 
     // Temporal filtering
-    float visibleTime1   = true;
-    float visibleTime2   = true;
+    float visibleTime1   = filterTimespan1(time);
+    float visibleTime2   = filterTimespan2(time);
     bool  contextVisible = false;
 
     // ID filtering

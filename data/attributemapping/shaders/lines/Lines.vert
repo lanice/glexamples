@@ -45,6 +45,8 @@ flat out int   v_lineId;   // Line ID
 vec4  calculatePosition(vec3 inVector);
 float attributeValue(int nodeIndex, int edgeIndex, int attr);
 float normalizedAttribute(int nodeIndex, int edgeIndex, int attr);
+float filterAttrs(int nodeIndex, int edgeIndex);
+float filterTimespan1(float time);
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -66,7 +68,7 @@ void main(void)
     // Set attributes
     v_nodeId    = int(attrs.x);
     v_lineId    = int(attrs.y);
-    v_visible   = 1.0;
+    v_visible   = filterTimespan1(attrs.z) * filterAttrs(int(attrs.x), int(attrs.y));
     v_color     = normalizedAttribute(int(attrs.x), int(attrs.y), lineColor);
     v_width     = normalizedAttribute(int(attrs.x), int(attrs.y), lineWidth);
 }
