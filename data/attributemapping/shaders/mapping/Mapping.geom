@@ -296,8 +296,8 @@ void transformSphere()
     // Calculate billboard
     vec3 dir = normalize(M);
     vec3 B   = M - dir*r;
-    vec3 dx  = cross(vec3(0.0, 1.0, 0.0), dir) * r;
-    vec3 dy  = cross(dx, dir) * r;
+    vec3 dx  = normalize(cross(vec3(0.0, 1.0, 0.0), dir)) * r;
+    vec3 dy  = normalize(cross(dx, dir)) * r;
 
     g_pos       = B-dx+dy;
     g_center    = M;

@@ -43,12 +43,12 @@ AttributeMappingPainter::AttributeMappingPainter(gloperate::ResourceManager & re
 , m_virtualTimeCapability(addCapability(new gloperate::VirtualTimeCapability()))
 , m_propLines(nullptr)
 , m_propMapping(nullptr)
-, m_linesVisible(true)
+, m_linesVisible(false)
 , m_colorMap("color_gradient.png")
 , m_lineColor("Zero")
 , m_lineWidth("Zero")
 , m_nodeHeight("None")
-, m_mappingVisible(false)
+, m_mappingVisible(true)
 , m_dataSet(nullptr)
 , m_configs(nullptr)
 {
@@ -247,18 +247,22 @@ void AttributeMappingPainter::onPaint()
     // Bind framebuffer
     fbo->bind(GL_FRAMEBUFFER);
 
-    // Update camera
-    const auto modelViewProjection = m_projectionCapability->projection() * m_cameraCapability->view();
-    const auto eye = m_cameraCapability->eye();
+    // Get camera status
+    const auto viewMatrix                = m_cameraCapability->view();
+    const auto projectionMatrix          = m_projectionCapability->projection();
+    const auto modelViewProjectionMatrix = projectionMatrix * viewMatrix;
+    const auto eye                       = m_cameraCapability->eye();
 
     // Clear image
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Set render states
+    glDisable(GL_BLEND);
+    glDepthFunc(GL_LESS);
     glEnable(GL_DEPTH_TEST);
 
     // Render grid
-    m_grid->update(eye, modelViewProjection);
+    m_grid->update(eye, modelViewProjectionMatrix);
     m_grid->draw();
 
     // Update mapping configuration
@@ -293,7 +297,7 @@ void AttributeMappingPainter::onPaint()
 
         // Update shader uniforms
         m_programLines->setUniform("screenSize",                glm::vec2(m_viewportCapability->width(), m_viewportCapability->height()));
-        m_programLines->setUniform("modelViewProjectionMatrix", modelViewProjection);
+        m_programLines->setUniform("modelViewProjectionMatrix", modelViewProjectionMatrix);
         m_programLines->setUniform("lineColor",                 Tools::indexOf(m_attributes, m_lineColor)  - 1);
         m_programLines->setUniform("lineWidth",                 Tools::indexOf(m_attributes, m_lineWidth)  - 1);
         m_programLines->setUniform("nodeHeight",                Tools::indexOf(m_attributes, m_nodeHeight) - 1);
@@ -331,9 +335,11 @@ void AttributeMappingPainter::onPaint()
 
         // Update shader uniforms
 //      m_programMapping->setUniform("screenSize",                glm::vec2(m_viewportCapability->width(), m_viewportCapability->height()));
-        m_programMapping->setUniform("modelViewProjectionMatrix", modelViewProjection);
-        m_programMapping->setUniform("projectionMatrix",          m_projectionCapability->projection());
+        m_programMapping->setUniform("viewMatrix",                viewMatrix);
+        m_programMapping->setUniform("projectionMatrix",          projectionMatrix);
+        m_programMapping->setUniform("modelViewProjectionMatrix", modelViewProjectionMatrix);
         m_programMapping->setUniform("numNodeAttributes",         m_attrStorage->numNodeAttributes());
+        // classIndex
         m_programMapping->setUniform("time",                      m_virtualTimeCapability->time());
 
         // Draw geometry

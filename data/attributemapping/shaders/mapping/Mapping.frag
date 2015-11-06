@@ -153,8 +153,7 @@ void renderSphere()
 
 void main()
 {
-//    outputColor = vec4(1.0, 0.0, 0.0, 1.0);
-    outputId    = 0.0;
+    outputId = 0.0;
     if (g_geometryType >= 2.0)
         renderSphere();
     else
