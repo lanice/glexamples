@@ -266,6 +266,6 @@ protected:
     bool                        m_spaceTimeCube;  ///< Use space-time-cube (map time to height)?
     float                       m_stcFactor;      ///< Space-time-cube factor
     std::vector<std::string>    m_attributes;     ///< List of available attributes
-    std::vector<std::string>    m_colorMaps;
-    std::vector<std::string>    m_textureMaps;
+    std::vector<std::string>    m_colorMaps;      ///< List of color maps
+    std::vector<std::string>    m_textureMaps;    ///< List of texture maps
 };

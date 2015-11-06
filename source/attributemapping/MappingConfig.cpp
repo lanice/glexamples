@@ -27,7 +27,7 @@ MappingConfig::MappingConfig(MappingConfigList * configList, bool useLod, std::s
 , m_positionY((float)-4)
 , m_positionZ((float)-5)
 , m_radius(0.0f)
-, m_color((float)-10)
+, m_color((float)-4)
 , m_textureX((float)-6)
 , m_textureY(0.0f)
 , m_alpha(1.0f)

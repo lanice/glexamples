@@ -47,7 +47,7 @@ AttributeMappingPainter::AttributeMappingPainter(gloperate::ResourceManager & re
 , m_colorMap("color_gradient.png")
 , m_lineColor("Zero")
 , m_lineWidth("Zero")
-, m_nodeHeight("None")
+, m_nodeHeight("PosY")
 , m_mappingVisible(true)
 , m_dataSet(nullptr)
 , m_configs(nullptr)
@@ -96,6 +96,14 @@ AttributeMappingPainter::AttributeMappingPainter(gloperate::ResourceManager & re
     m_configs->setColorMaps(m_colorMaps);
     m_configs->setTextureMaps(m_textureMaps);
     m_configs->setNumConfigs(8);
+    for (int i=0; i<8; i++)
+    {
+        // Give each configuration a different color map
+        m_configs->getConfig(i)->setColorMapID(i);
+
+        // Every second configuration renders spheres instead of tubes
+        m_configs->getConfig(i)->setGeometryType((i % 2) + 1);
+    }
     addProperty(m_configs);
 }
 
@@ -298,9 +306,9 @@ void AttributeMappingPainter::onPaint()
         // Update shader uniforms
         m_programLines->setUniform("screenSize",                glm::vec2(m_viewportCapability->width(), m_viewportCapability->height()));
         m_programLines->setUniform("modelViewProjectionMatrix", modelViewProjectionMatrix);
-        m_programLines->setUniform("lineColor",                 Tools::indexOf(m_attributes, m_lineColor)  - 1);
-        m_programLines->setUniform("lineWidth",                 Tools::indexOf(m_attributes, m_lineWidth)  - 1);
-        m_programLines->setUniform("nodeHeight",                Tools::indexOf(m_attributes, m_nodeHeight) - 1);
+        m_programLines->setUniform("lineColor",                 Tools::indexOf(m_attributes, m_lineColor)  );
+        m_programLines->setUniform("lineWidth",                 Tools::indexOf(m_attributes, m_lineWidth)  );
+        m_programLines->setUniform("nodeHeight",                Tools::indexOf(m_attributes, m_nodeHeight) );
         m_programLines->setUniform("numNodeAttributes",         m_attrStorage->numNodeAttributes());
 
         // Draw geometry
@@ -334,12 +342,11 @@ void AttributeMappingPainter::onPaint()
         m_configData->bindRange(gl::GL_UNIFORM_BUFFER, 0, 0, 20 * sizeof(float) * m_configs->numConfigs());
 
         // Update shader uniforms
-//      m_programMapping->setUniform("screenSize",                glm::vec2(m_viewportCapability->width(), m_viewportCapability->height()));
         m_programMapping->setUniform("viewMatrix",                viewMatrix);
         m_programMapping->setUniform("projectionMatrix",          projectionMatrix);
         m_programMapping->setUniform("modelViewProjectionMatrix", modelViewProjectionMatrix);
         m_programMapping->setUniform("numNodeAttributes",         m_attrStorage->numNodeAttributes());
-        // classIndex
+        m_programMapping->setUniform("classIndex",                m_configs->classificationIndex());
         m_programMapping->setUniform("time",                      m_virtualTimeCapability->time());
 
         // Draw geometry
@@ -363,6 +370,12 @@ void AttributeMappingPainter::generateTestData()
     // Create new data set
     m_dataSet = new DataSet;
 
+    std::vector<std::string> lineAttributes = { "LineClass" };
+    m_dataSet->setLineAttributes(lineAttributes);
+
+    std::vector<std::string> nodeAttributes = { "Linear", "Sinus", "HeightClass" };
+    m_dataSet->setNodeAttributes(nodeAttributes);
+
     // Define center
     glm::vec3 center;
 
@@ -376,6 +389,7 @@ void AttributeMappingPainter::generateTestData()
 
         // Create line
         Line * line = new Line();
+        line->setAttribute(0, i%4);
         m_dataSet->add(line);
 
         // Calculate nodes on that line
@@ -391,7 +405,9 @@ void AttributeMappingPainter::generateTestData()
             glm::vec3 pos = center + (j * 0.005f) * dir;
             pos.y = glm::sin(glm::pi<float>() * (float)j / (float)(numNodes-1) ) * 0.2f;
             node->setPosition(pos);
-
+            node->setAttribute(0, (float)j / (float)(numNodes-1));
+            node->setAttribute(1, pos.y);
+            node->setAttribute(2, pos.y > 0.12f ? 1.0 : 0.0);
         }
     }
 
@@ -407,7 +423,7 @@ void AttributeMappingPainter::generateTestData()
 
     // Update attribute choices
     m_attributes = m_attrStorage->attributes();
-    m_attributes.insert(m_attributes.begin(), "None");
+//    m_attributes.insert(m_attributes.begin(), "None");
     m_propLines->property("LineColor") ->setOption("choices", m_attributes);
     m_propLines->property("LineWidth") ->setOption("choices", m_attributes);
     m_propLines->property("NodeHeight")->setOption("choices", m_attributes);

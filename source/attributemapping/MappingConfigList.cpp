@@ -13,6 +13,7 @@ MappingConfigList::MappingConfigList()
 , m_styles(reflectionzeug::Variant::map())
 , m_presets(reflectionzeug::Variant::map())
 , m_preset("Default")
+, m_classification("Zero")
 , m_spaceTimeCube(false)
 , m_stcFactor(1.0f)
 {
