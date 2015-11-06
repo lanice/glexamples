@@ -21,7 +21,7 @@ MappingConfig::MappingConfig(MappingConfigList * configList, bool useLod, std::s
 , m_maxRadius(0.1f)
 , m_stretchSize(8.0f)
 , m_torsionSize(8.0f)
-, m_animationSpeed(0.7f)
+, m_animationSpeed(1.0f)
 , m_upVector(0.0f, 0.0f, 1.0f)
 , m_positionX((float)-3)
 , m_positionY((float)-4)

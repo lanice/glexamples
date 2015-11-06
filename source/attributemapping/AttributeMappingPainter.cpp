@@ -17,6 +17,7 @@
 #include <gloperate/painter/ViewportCapability.h>
 #include <gloperate/painter/PerspectiveProjectionCapability.h>
 #include <gloperate/painter/CameraCapability.h>
+#include <gloperate/painter/VirtualTimeCapability.h>
 #include <gloperate/resources/ResourceManager.h>
 #include <gloperate/primitives/AdaptiveGrid.h>
 
@@ -39,6 +40,7 @@ AttributeMappingPainter::AttributeMappingPainter(gloperate::ResourceManager & re
 , m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
 , m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
 , m_cameraCapability(addCapability(new gloperate::CameraCapability()))
+, m_virtualTimeCapability(addCapability(new gloperate::VirtualTimeCapability()))
 , m_propLines(nullptr)
 , m_propMapping(nullptr)
 , m_linesVisible(true)
@@ -332,6 +334,7 @@ void AttributeMappingPainter::onPaint()
         m_programMapping->setUniform("modelViewProjectionMatrix", modelViewProjection);
         m_programMapping->setUniform("projectionMatrix",          m_projectionCapability->projection());
         m_programMapping->setUniform("numNodeAttributes",         m_attrStorage->numNodeAttributes());
+        m_programMapping->setUniform("time",                      m_virtualTimeCapability->time());
 
         // Draw geometry
         m_nodeGeometry->draw();

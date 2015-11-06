@@ -28,6 +28,7 @@ namespace gloperate
     class AbstractViewportCapability;
     class AbstractPerspectiveProjectionCapability;
     class AbstractCameraCapability;
+    class AbstractVirtualTimeCapability;
 }
 
 class DataSet;
@@ -75,6 +76,7 @@ protected:
     gloperate::AbstractViewportCapability              * m_viewportCapability;
     gloperate::AbstractPerspectiveProjectionCapability * m_projectionCapability;
     gloperate::AbstractCameraCapability                * m_cameraCapability;
+    gloperate::AbstractVirtualTimeCapability           * m_virtualTimeCapability;
 
     // Property groups
     reflectionzeug::PropertyGroup                      * m_propLines;       ///< Property group for line rendering options
