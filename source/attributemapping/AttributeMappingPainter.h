@@ -55,6 +55,9 @@ public:
     std::string getNodeHeight() const;
     void setNodeHeight(const std::string & attr);
 
+    bool mappingVisible() const;
+    void setMappingVisible(bool visible);
+
 
 protected:
     virtual void onInitialize() override;
@@ -73,12 +76,17 @@ protected:
     gloperate::AbstractPerspectiveProjectionCapability * m_projectionCapability;
     gloperate::AbstractCameraCapability                * m_cameraCapability;
 
+    // Property groups
+    reflectionzeug::PropertyGroup                      * m_propLines;       ///< Property group for line rendering options
+    reflectionzeug::PropertyGroup                      * m_propMapping;     ///< Property group for attribute mapping options
+
     // Options
     bool                                                 m_linesVisible;    ///< Render simple lines?
     std::string                                          m_colorMap;        ///< Color map
     std::string                                          m_lineColor;       ///< Name of attribute that is mapped to color
     std::string                                          m_lineWidth;       ///< Name of attribute that is mapped to width
     std::string                                          m_nodeHeight;      ///< Name of attribute that is mapped to height
+    bool                                                 m_mappingVisible;  ///< Render attribute mapping?
 
     // Data
     DataSet                                            * m_dataSet;
@@ -88,13 +96,14 @@ protected:
     std::vector<std::string>                             m_textureMaps;     ///< List of available texture maps
 
     // Rendering
-    globjects::ref_ptr<gloperate::AdaptiveGrid>          m_grid;
-    globjects::ref_ptr<LineGeometry>                     m_lineGeometry;
-    globjects::ref_ptr<NodeGeometry>                     m_nodeGeometry;
-    globjects::ref_ptr<AttributeStorage>                 m_attrStorage;
-    globjects::ref_ptr<globjects::Program>               m_program;
-    globjects::ref_ptr<globjects::Texture>               m_colorMapTexture;
-    globjects::ref_ptr<globjects::Texture>               m_textureMapsTex;
-    globjects::ref_ptr<globjects::Texture>               m_colorMapsTex;
+    globjects::ref_ptr<gloperate::AdaptiveGrid>          m_grid;            ///< Grid renderer
+    globjects::ref_ptr<LineGeometry>                     m_lineGeometry;    ///< Dataset representation in the form of points (for line rendering)
+    globjects::ref_ptr<NodeGeometry>                     m_nodeGeometry;    ///< Dataset representation in the form of lines  (for attribute mapping)
+    globjects::ref_ptr<AttributeStorage>                 m_attrStorage;     ///< GPU representation of attributes
+    globjects::ref_ptr<globjects::Program>               m_programLines;    ///< Program for rendering (for line rendering)
+    globjects::ref_ptr<globjects::Program>               m_programMapping;  ///< Program for rendering (for attribute mapping)
+    globjects::ref_ptr<globjects::Texture>               m_colorMapTexture; ///< Texture containing the current color map (for line rendering)
+    globjects::ref_ptr<globjects::Texture>               m_textureMapsTex;  ///< Texture containing all texture maps (for attribute mapping)
+    globjects::ref_ptr<globjects::Texture>               m_colorMapsTex;    ///< Texture containing all color maps (for attribute mapping)
     globjects::ref_ptr<globjects::Buffer>                m_configData;      ///< Uniform buffer containing the mapping configurations
 };

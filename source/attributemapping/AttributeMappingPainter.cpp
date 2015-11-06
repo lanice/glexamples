@@ -39,11 +39,14 @@ AttributeMappingPainter::AttributeMappingPainter(gloperate::ResourceManager & re
 , m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
 , m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
 , m_cameraCapability(addCapability(new gloperate::CameraCapability()))
-, m_linesVisible(false)
+, m_propLines(nullptr)
+, m_propMapping(nullptr)
+, m_linesVisible(true)
 , m_colorMap("color_gradient.png")
 , m_lineColor("Zero")
 , m_lineWidth("Zero")
 , m_nodeHeight("None")
+, m_mappingVisible(false)
 , m_dataSet(nullptr)
 , m_configs(nullptr)
 {
@@ -64,20 +67,29 @@ AttributeMappingPainter::AttributeMappingPainter(gloperate::ResourceManager & re
     m_textureMaps.push_back("tube_texture_daytime.png");
 
     // Register properties
-    addProperty<bool>("Visible", this, &AttributeMappingPainter::renderLines, &AttributeMappingPainter::setRenderLines);
+    m_propLines = new PropertyGroup("Lines");
+    addProperty(m_propLines);
 
-    addProperty<std::string>("ColorMap", this, &AttributeMappingPainter::getColorMap, &AttributeMappingPainter::setColorMap);
-    PropertyGroup::property("ColorMap")->setOption("choices", m_colorMaps);
+    m_propLines->addProperty<bool>("Visible", this, &AttributeMappingPainter::linesVisible, &AttributeMappingPainter::setLinesVisible);
 
-    addProperty<std::string>("LineColor", this, &AttributeMappingPainter::getLineColor, &AttributeMappingPainter::setLineColor);
-    PropertyGroup::property("LineColor")->setOption("choices", std::vector<std::string>());
+    m_propLines->addProperty<std::string>("ColorMap", this, &AttributeMappingPainter::getColorMap, &AttributeMappingPainter::setColorMap);
+    m_propLines->property("ColorMap")->setOption("choices", m_colorMaps);
 
-    addProperty<std::string>("LineWidth",  this, &AttributeMappingPainter::getLineWidth,  &AttributeMappingPainter::setLineWidth);
-    PropertyGroup::property("LineWidth")->setOption("choices", std::vector<std::string>());
+    m_propLines->addProperty<std::string>("LineColor", this, &AttributeMappingPainter::getLineColor, &AttributeMappingPainter::setLineColor);
+    m_propLines->property("LineColor")->setOption("choices", std::vector<std::string>());
 
-    addProperty<std::string>("NodeHeight", this, &AttributeMappingPainter::getNodeHeight,  &AttributeMappingPainter::setNodeHeight);
-    PropertyGroup::property("NodeHeight")->setOption("choices", std::vector<std::string>());
+    m_propLines->addProperty<std::string>("LineWidth",  this, &AttributeMappingPainter::getLineWidth,  &AttributeMappingPainter::setLineWidth);
+    m_propLines->property("LineWidth")->setOption("choices", std::vector<std::string>());
 
+    m_propLines->addProperty<std::string>("NodeHeight", this, &AttributeMappingPainter::getNodeHeight,  &AttributeMappingPainter::setNodeHeight);
+    m_propLines->property("NodeHeight")->setOption("choices", std::vector<std::string>());
+
+    m_propMapping = new PropertyGroup("AttributeMapping");
+    addProperty(m_propMapping);
+
+    m_propMapping->addProperty<bool>("Visible", this, &AttributeMappingPainter::mappingVisible, &AttributeMappingPainter::setMappingVisible);
+
+    // Create mapping configuration and expose it as a property tree
     m_configs = new MappingConfigList();
     m_configs->setColorMaps(m_colorMaps);
     m_configs->setTextureMaps(m_textureMaps);
@@ -140,6 +152,16 @@ void AttributeMappingPainter::setNodeHeight(const std::string & attr)
     m_nodeHeight = attr;
 }
 
+bool AttributeMappingPainter::mappingVisible() const
+{
+    return m_mappingVisible;
+}
+
+void AttributeMappingPainter::setMappingVisible(bool visible)
+{
+    m_mappingVisible = visible;
+}
+
 void AttributeMappingPainter::onInitialize()
 {
     // Apply fix for apple
@@ -154,12 +176,15 @@ void AttributeMappingPainter::onInitialize()
     m_grid = new gloperate::AdaptiveGrid();
     m_grid->setColor({0.6f, 0.6f, 0.6f});
 
-    // Create program
-    m_program = new Program();
-    
-    /*
-    // Lines
-    m_program->attach(
+    // Create texture array for color maps
+    createColorMaps();
+
+    // Create texture array for textures
+    createTextureMaps();
+
+    // Create program for line rendering
+    m_programLines = new Program();
+    m_programLines->attach(
         Shader::fromFile(GL_VERTEX_SHADER,   "data/attributemapping/shaders/lines/Lines.vert"),
         Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/lines/Lines.geom"),
         Shader::fromFile(GL_FRAGMENT_SHADER, "data/attributemapping/shaders/lines/Lines.frag"),
@@ -169,10 +194,10 @@ void AttributeMappingPainter::onInitialize()
         Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/ScreenSize.glsl"),
         Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/ColorMap.glsl")
     );
-    */
 
-    // Real-time attribute mapping
-    m_program->attach(
+    // Create program for real-time attribute mapping
+    m_programMapping = new Program();
+    m_programMapping->attach(
         Shader::fromFile(GL_VERTEX_SHADER,   "data/attributemapping/shaders/mapping/Mapping.vert"),
         Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/mapping/Mapping.geom"),
         Shader::fromFile(GL_FRAGMENT_SHADER, "data/attributemapping/shaders/mapping/Mapping.frag"),
@@ -181,12 +206,6 @@ void AttributeMappingPainter::onInitialize()
         Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/Attributes.glsl"),
         Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/Filtering.glsl")
     );
-
-    // Create texture array for color maps
-    createColorMaps();
-
-    // Create texture array for textures
-    createTextureMaps();
 
     // Initialize camera
     static const auto zNear = 0.3f, zFar = 15.f, fovy = 50.f;
@@ -226,19 +245,14 @@ void AttributeMappingPainter::onPaint()
     // Bind framebuffer
     fbo->bind(GL_FRAMEBUFFER);
 
-    // Update color map texture
-    if (!m_colorMapTexture.get())
-    {
-        m_colorMapTexture = m_resourceManager.load<globjects::Texture>("data/attributemapping/gradients/" + m_colorMap);
-    }
+    // Update camera
+    const auto modelViewProjection = m_projectionCapability->projection() * m_cameraCapability->view();
+    const auto eye = m_cameraCapability->eye();
 
     // Clear image
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    const auto modelViewProjection = m_projectionCapability->projection() * m_cameraCapability->view();
-    const auto eye = m_cameraCapability->eye();
-
-    // Set states
+    // Set render states
     glEnable(GL_DEPTH_TEST);
 
     // Render grid
@@ -250,47 +264,81 @@ void AttributeMappingPainter::onPaint()
         uploadConfig();
     }
 
+    // Update color map texture
+    if (!m_colorMapTexture.get())
+    {
+        m_colorMapTexture = m_resourceManager.load<globjects::Texture>("data/attributemapping/gradients/" + m_colorMap);
+    }
+
     // Bind attribute texture
     m_attrStorage->texture()->bindActive(gl::GL_TEXTURE0);
     gl::glActiveTexture(gl::GL_TEXTURE0);
     m_attrStorage->texture()->bind();
-    m_program->setUniform("attributes", 0);
-
-    // Bind color map texture
-    m_attrStorage->texture()->bindActive(gl::GL_TEXTURE0 + 1);
-    gl::glActiveTexture(gl::GL_TEXTURE0 + 1);
-    m_colorMapTexture->bind();
-    m_program->setUniform("colorMap", 1);
-
-    // Bind color maps texture
-    m_colorMapsTex->bindActive(gl::GL_TEXTURE0 + 2);
-    gl::glActiveTexture(gl::GL_TEXTURE0 + 2);
-    m_colorMapsTex->bind();
-    m_program->setUniform("colorMaps", 2);
-
-    // Bind texture maps texture
-    m_textureMapsTex->bindActive(gl::GL_TEXTURE0 + 3);
-    gl::glActiveTexture(gl::GL_TEXTURE0 + 3);
-    m_textureMapsTex->bind();
-    m_program->setUniform("textures", 3);
-
-    // Bind configurations uniform block
-    globjects::UniformBlock * uniformBlock = m_program->uniformBlock("CONFIG");
-    uniformBlock->setBinding(0);
-    m_configData->bindRange(gl::GL_UNIFORM_BUFFER, 0, 0, 20 * sizeof(float) * m_configs->numConfigs());
+    m_programLines  ->setUniform("attributes", 0);
+    m_programMapping->setUniform("attributes", 0);
 
     // Render lines
-    m_program->use();
-    m_program->setUniform("screenSize",                glm::vec2(m_viewportCapability->width(), m_viewportCapability->height()));
-    m_program->setUniform("modelViewProjectionMatrix", modelViewProjection);
-    m_program->setUniform("projectionMatrix",          m_projectionCapability->projection());
-    m_program->setUniform("lineColor",                 Tools::indexOf(m_attributes, m_lineColor)  - 1);
-    m_program->setUniform("lineWidth",                 Tools::indexOf(m_attributes, m_lineWidth)  - 1);
-    m_program->setUniform("nodeHeight",                Tools::indexOf(m_attributes, m_nodeHeight) - 1);
-    m_program->setUniform("numNodeAttributes",         m_attrStorage->numNodeAttributes());
-    m_nodeGeometry->draw();
-//  m_lineGeometry->draw();
-    m_program->release();
+    if (m_linesVisible)
+    {
+        // Bind program
+        m_programLines->use();
+
+        // Bind color map texture
+        m_attrStorage->texture()->bindActive(gl::GL_TEXTURE0 + 1);
+        gl::glActiveTexture(gl::GL_TEXTURE0 + 1);
+        m_colorMapTexture->bind();
+        m_programLines->setUniform("colorMap", 1);
+
+        // Update shader uniforms
+        m_programLines->setUniform("screenSize",                glm::vec2(m_viewportCapability->width(), m_viewportCapability->height()));
+        m_programLines->setUniform("modelViewProjectionMatrix", modelViewProjection);
+        m_programLines->setUniform("lineColor",                 Tools::indexOf(m_attributes, m_lineColor)  - 1);
+        m_programLines->setUniform("lineWidth",                 Tools::indexOf(m_attributes, m_lineWidth)  - 1);
+        m_programLines->setUniform("nodeHeight",                Tools::indexOf(m_attributes, m_nodeHeight) - 1);
+        m_programLines->setUniform("numNodeAttributes",         m_attrStorage->numNodeAttributes());
+
+        // Draw geometry
+        m_lineGeometry->draw();
+
+        // Release program
+        m_programLines->release();
+    }
+
+    // Render real-time attribute mapping
+    if (m_mappingVisible)
+    {
+        // Bind program
+        m_programMapping->use();
+
+        // Bind color maps texture
+        m_colorMapsTex->bindActive(gl::GL_TEXTURE0 + 1);
+        gl::glActiveTexture(gl::GL_TEXTURE0 + 1);
+        m_colorMapsTex->bind();
+        m_programMapping->setUniform("colorMaps", 1);
+
+        // Bind texture maps texture
+        m_textureMapsTex->bindActive(gl::GL_TEXTURE0 + 2);
+        gl::glActiveTexture(gl::GL_TEXTURE0 + 2);
+        m_textureMapsTex->bind();
+        m_programMapping->setUniform("textures", 2);
+
+        // Bind configurations uniform block
+        globjects::UniformBlock * uniformBlock = m_programMapping->uniformBlock("CONFIG");
+        uniformBlock->setBinding(0);
+        m_configData->bindRange(gl::GL_UNIFORM_BUFFER, 0, 0, 20 * sizeof(float) * m_configs->numConfigs());
+
+        // Update shader uniforms
+//      m_programMapping->setUniform("screenSize",                glm::vec2(m_viewportCapability->width(), m_viewportCapability->height()));
+        m_programMapping->setUniform("modelViewProjectionMatrix", modelViewProjection);
+        m_programMapping->setUniform("projectionMatrix",          m_projectionCapability->projection());
+        m_programMapping->setUniform("numNodeAttributes",         m_attrStorage->numNodeAttributes());
+
+        // Draw geometry
+        m_nodeGeometry->draw();
+
+        // Release program
+        m_programMapping->release();
+    }
 
     // Release framebuffer
     Framebuffer::unbind(GL_FRAMEBUFFER);
@@ -351,14 +399,16 @@ void AttributeMappingPainter::generateTestData()
     // Update attribute choices
     m_attributes = m_attrStorage->attributes();
     m_attributes.insert(m_attributes.begin(), "None");
-    PropertyGroup::property("LineColor") ->setOption("choices", m_attributes);
-    PropertyGroup::property("LineWidth") ->setOption("choices", m_attributes);
-    PropertyGroup::property("NodeHeight")->setOption("choices", m_attributes);
+    m_propLines->property("LineColor") ->setOption("choices", m_attributes);
+    m_propLines->property("LineWidth") ->setOption("choices", m_attributes);
+    m_propLines->property("NodeHeight")->setOption("choices", m_attributes);
     m_configs->setAttributes(m_attributes);
 }
 
 void AttributeMappingPainter::createTextureMaps()
 {
+    // Merge all textures into a single 2D texture and upload it as a 2D texture array
+
     int width  = 256;
     int height = 256;
 
@@ -402,6 +452,8 @@ void AttributeMappingPainter::createTextureMaps()
 
 void AttributeMappingPainter::createColorMaps()
 {
+    // Merge all textures into a single 2D texture and upload it as a 2D texture array
+
     int width  = 128;
     int height = 1;
 
