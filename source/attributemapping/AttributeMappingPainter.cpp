@@ -312,7 +312,9 @@ void AttributeMappingPainter::onPaint()
         m_programLines->setUniform("numNodeAttributes",         m_attrStorage->numNodeAttributes());
 
         // Draw geometry
+        glLineWidth(10.0f);
         m_lineGeometry->draw();
+        glLineWidth(1.0f);
 
         // Release program
         m_programLines->release();
