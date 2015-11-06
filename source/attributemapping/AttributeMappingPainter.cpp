@@ -39,12 +39,13 @@ AttributeMappingPainter::AttributeMappingPainter(gloperate::ResourceManager & re
 , m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
 , m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
 , m_cameraCapability(addCapability(new gloperate::CameraCapability()))
-, m_dataSet(nullptr)
-, m_configs(nullptr)
+, m_linesVisible(false)
 , m_colorMap("color_gradient.png")
 , m_lineColor("Zero")
 , m_lineWidth("Zero")
 , m_nodeHeight("None")
+, m_dataSet(nullptr)
+, m_configs(nullptr)
 {
     // List available color maps
     m_colorMaps.push_back("color_gradient.png");
@@ -63,6 +64,8 @@ AttributeMappingPainter::AttributeMappingPainter(gloperate::ResourceManager & re
     m_textureMaps.push_back("tube_texture_daytime.png");
 
     // Register properties
+    addProperty<bool>("Visible", this, &AttributeMappingPainter::renderLines, &AttributeMappingPainter::setRenderLines);
+
     addProperty<std::string>("ColorMap", this, &AttributeMappingPainter::getColorMap, &AttributeMappingPainter::setColorMap);
     PropertyGroup::property("ColorMap")->setOption("choices", m_colorMaps);
 
@@ -84,6 +87,16 @@ AttributeMappingPainter::AttributeMappingPainter(gloperate::ResourceManager & re
 
 AttributeMappingPainter::~AttributeMappingPainter()
 {
+}
+
+bool AttributeMappingPainter::linesVisible() const
+{
+    return m_linesVisible;
+}
+
+void AttributeMappingPainter::setLinesVisible(bool visible)
+{
+    m_linesVisible = visible;
 }
 
 std::string AttributeMappingPainter::getColorMap() const
@@ -143,6 +156,9 @@ void AttributeMappingPainter::onInitialize()
 
     // Create program
     m_program = new Program();
+    
+    /*
+    // Lines
     m_program->attach(
         Shader::fromFile(GL_VERTEX_SHADER,   "data/attributemapping/shaders/lines/Lines.vert"),
         Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/lines/Lines.geom"),
@@ -152,6 +168,18 @@ void AttributeMappingPainter::onInitialize()
         Shader::fromFile(GL_VERTEX_SHADER,   "data/attributemapping/shaders/Filtering.glsl"),
         Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/ScreenSize.glsl"),
         Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/ColorMap.glsl")
+    );
+    */
+
+    // Real-time attribute mapping
+    m_program->attach(
+        Shader::fromFile(GL_VERTEX_SHADER,   "data/attributemapping/shaders/mapping/Mapping.vert"),
+        Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/mapping/Mapping.geom"),
+        Shader::fromFile(GL_FRAGMENT_SHADER, "data/attributemapping/shaders/mapping/Mapping.frag"),
+        Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/Position.glsl"),
+        Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/Depth.glsl"),
+        Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/Attributes.glsl"),
+        Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/Filtering.glsl")
     );
 
     // Create texture array for color maps
@@ -247,21 +275,21 @@ void AttributeMappingPainter::onPaint()
     m_program->setUniform("textures", 3);
 
     // Bind configurations uniform block
-    /*
     globjects::UniformBlock * uniformBlock = m_program->uniformBlock("CONFIG");
     uniformBlock->setBinding(0);
     m_configData->bindRange(gl::GL_UNIFORM_BUFFER, 0, 0, 20 * sizeof(float) * m_configs->numConfigs());
-    */
 
     // Render lines
     m_program->use();
     m_program->setUniform("screenSize",                glm::vec2(m_viewportCapability->width(), m_viewportCapability->height()));
     m_program->setUniform("modelViewProjectionMatrix", modelViewProjection);
+    m_program->setUniform("projectionMatrix",          m_projectionCapability->projection());
     m_program->setUniform("lineColor",                 Tools::indexOf(m_attributes, m_lineColor)  - 1);
     m_program->setUniform("lineWidth",                 Tools::indexOf(m_attributes, m_lineWidth)  - 1);
     m_program->setUniform("nodeHeight",                Tools::indexOf(m_attributes, m_nodeHeight) - 1);
     m_program->setUniform("numNodeAttributes",         m_attrStorage->numNodeAttributes());
-    m_lineGeometry->draw();
+    m_nodeGeometry->draw();
+//  m_lineGeometry->draw();
     m_program->release();
 
     // Release framebuffer
@@ -311,6 +339,8 @@ void AttributeMappingPainter::generateTestData()
     }
 
     // Create geometry
+    m_nodeGeometry = new NodeGeometry();
+    m_nodeGeometry->setData(*m_dataSet);
     m_lineGeometry = new LineGeometry();
     m_lineGeometry->setData(*m_dataSet);
 
@@ -324,6 +354,7 @@ void AttributeMappingPainter::generateTestData()
     PropertyGroup::property("LineColor") ->setOption("choices", m_attributes);
     PropertyGroup::property("LineWidth") ->setOption("choices", m_attributes);
     PropertyGroup::property("NodeHeight")->setOption("choices", m_attributes);
+    m_configs->setAttributes(m_attributes);
 }
 
 void AttributeMappingPainter::createTextureMaps()
@@ -347,10 +378,10 @@ void AttributeMappingPainter::createTextureMaps()
             {
                 for (int x=0; x<width; x++)
                 {
-                    buffer[(i * width * height + y * width + x) * 4 + 0] = image[(y * width + x) * 4 + 0];
-                    buffer[(i * width * height + y * width + x) * 4 + 1] = image[(y * width + x) * 4 + 1];
-                    buffer[(i * width * height + y * width + x) * 4 + 2] = image[(y * width + x) * 4 + 2];
-                    buffer[(i * width * height + y * width + x) * 4 + 3] = image[(y * width + x) * 4 + 3];
+                    buffer[((numImages - 1 - i) * width * height + y * width + x) * 4 + 0] = image[((height - 1 - y) * width + x) * 4 + 0];
+                    buffer[((numImages - 1 - i) * width * height + y * width + x) * 4 + 1] = image[((height - 1 - y) * width + x) * 4 + 1];
+                    buffer[((numImages - 1 - i) * width * height + y * width + x) * 4 + 2] = image[((height - 1 - y) * width + x) * 4 + 2];
+                    buffer[((numImages - 1 - i) * width * height + y * width + x) * 4 + 3] = image[((height - 1 - y) * width + x) * 4 + 3];
                 }
             }
         }
@@ -390,10 +421,10 @@ void AttributeMappingPainter::createColorMaps()
             {
                 for (int x=0; x<width; x++)
                 {
-                    buffer[(i * width * height + y * width + x) * 4 + 0] = image[(y * width + x) * 4 + 0];
-                    buffer[(i * width * height + y * width + x) * 4 + 1] = image[(y * width + x) * 4 + 1];
-                    buffer[(i * width * height + y * width + x) * 4 + 2] = image[(y * width + x) * 4 + 2];
-                    buffer[(i * width * height + y * width + x) * 4 + 3] = image[(y * width + x) * 4 + 3];
+                    buffer[((numImages - 1 - i) * width * height + y * width + x) * 4 + 0] = image[((height - 1 - y) * width + x) * 4 + 0];
+                    buffer[((numImages - 1 - i) * width * height + y * width + x) * 4 + 1] = image[((height - 1 - y) * width + x) * 4 + 1];
+                    buffer[((numImages - 1 - i) * width * height + y * width + x) * 4 + 2] = image[((height - 1 - y) * width + x) * 4 + 2];
+                    buffer[((numImages - 1 - i) * width * height + y * width + x) * 4 + 3] = image[((height - 1 - y) * width + x) * 4 + 3];
                 }
             }
         }

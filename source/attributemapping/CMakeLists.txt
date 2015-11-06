@@ -42,6 +42,7 @@ set(sources
     ${source_path}/AttributeMappingPainter.cpp
     ${source_path}/MappingConfigList.cpp
     ${source_path}/MappingConfig.cpp
+    ${source_path}/NodeGeometry.cpp
     ${source_path}/LineGeometry.cpp
     ${source_path}/AttributeStorage.cpp
     ${source_path}/DataSet.cpp
@@ -55,6 +56,7 @@ set(api_includes
     ${include_path}/AttributeMappingPainter.h
     ${include_path}/MappingConfigList.h
     ${include_path}/MappingConfig.h
+    ${include_path}/NodeGeometry.h
     ${include_path}/LineGeometry.h
     ${include_path}/AttributeStorage.h
     ${include_path}/DataSet.h
