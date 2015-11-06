@@ -139,13 +139,13 @@ void AttributeMappingPainter::onInitialize()
     // Create program
     m_program = new Program();
     m_program->attach(
-        Shader::fromFile(GL_VERTEX_SHADER,   "data/attributemapping/Lines/Lines.vert"),
-        Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/Lines/Lines.geom"),
-        Shader::fromFile(GL_FRAGMENT_SHADER, "data/attributemapping/Lines/Lines.frag"),
-        Shader::fromFile(GL_VERTEX_SHADER,   "data/attributemapping/Position.glsl"),
-        Shader::fromFile(GL_VERTEX_SHADER,   "data/attributemapping/Attributes.glsl"),
-        Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/ScreenSize.glsl"),
-        Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/ColorMap.glsl")
+        Shader::fromFile(GL_VERTEX_SHADER,   "data/attributemapping/shaders/lines/Lines.vert"),
+        Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/lines/Lines.geom"),
+        Shader::fromFile(GL_FRAGMENT_SHADER, "data/attributemapping/shaders/lines/Lines.frag"),
+        Shader::fromFile(GL_VERTEX_SHADER,   "data/attributemapping/shaders/Position.glsl"),
+        Shader::fromFile(GL_VERTEX_SHADER,   "data/attributemapping/shaders/Attributes.glsl"),
+        Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/ScreenSize.glsl"),
+        Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/ColorMap.glsl")
     );
 
     // Initialize camera
