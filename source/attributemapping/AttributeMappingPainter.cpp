@@ -24,7 +24,6 @@
 #include "Line.h"
 #include "Node.h"
 #include "Tools.h"
-#include "PropertyExtensions.h"
 
 
 using namespace gl;

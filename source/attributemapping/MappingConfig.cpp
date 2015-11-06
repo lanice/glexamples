@@ -2,7 +2,6 @@
 #include "MappingConfig.h"
 
 #include "MappingConfigList.h"
-#include "PropertyExtensions.h"
 #include "Tools.h"
 
 
@@ -40,8 +39,8 @@ MappingConfig::MappingConfig(MappingConfigList * configList, bool useLod, std::s
 
     addProperty<int>("TextureID", this, &MappingConfig::textureID, &MappingConfig::setTextureID);
 
-    auto * propTexture = addProperty<TextureMap>("Texture", this, &MappingConfig::texture, &MappingConfig::setTexture);
-    propTexture->setTextures(m_configList->textureMaps());
+    addProperty<std::string>("Texture", this, &MappingConfig::texture, &MappingConfig::setTexture);
+    PropertyGroup::property("Texture")->setOption("choices", m_configList->textureMaps());
 
     addProperty<int>("ColorMapID", this, &MappingConfig::colorMapID, &MappingConfig::setColorMapID);
 
@@ -112,6 +111,8 @@ void MappingConfig::setAttributes(const std::vector<std::string> & attributes)
         getLodConfig(4)->setAttributes(attributes);
     }
 
+    // [TODO] Make this possible by providing a mapping-widget
+    /*
     dynamic_cast<reflectionzeug::MappingValueProperty*>(PropertyGroup::property("PositionX"))->setAttributes(m_attributes);
     dynamic_cast<reflectionzeug::MappingValueProperty*>(PropertyGroup::property("PositionY"))->setAttributes(m_attributes);
     dynamic_cast<reflectionzeug::MappingValueProperty*>(PropertyGroup::property("PositionZ"))->setAttributes(m_attributes);
@@ -120,6 +121,7 @@ void MappingConfig::setAttributes(const std::vector<std::string> & attributes)
     dynamic_cast<reflectionzeug::MappingValueProperty*>(PropertyGroup::property("TextureX"))->setAttributes(m_attributes);
     dynamic_cast<reflectionzeug::MappingValueProperty*>(PropertyGroup::property("TextureY"))->setAttributes(m_attributes);
     dynamic_cast<reflectionzeug::MappingValueProperty*>(PropertyGroup::property("Alpha"))->setAttributes(m_attributes);
+    */
 }
 
 bool MappingConfig::checkUpdated()
@@ -214,18 +216,18 @@ void MappingConfig::setTextureID(int id)
     m_texture = m_configList->textureMaps()[id];
 }
 
-TextureMap MappingConfig::texture() const
+std::string MappingConfig::texture() const
 {
     return m_texture;
 }
 
-void MappingConfig::setTexture(const TextureMap & texture)
+void MappingConfig::setTexture(const std::string & texture)
 {
     // Set texture
     m_texture = texture;
 
     // Update chosen texture index
-    int index = Tools::indexOf(m_configList->textureMaps(), texture.filename());
+    int index = Tools::indexOf(m_configList->textureMaps(), texture);
     setTextureID(index);
 }
 

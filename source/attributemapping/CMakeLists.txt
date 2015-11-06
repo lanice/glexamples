@@ -48,10 +48,6 @@ set(sources
     ${source_path}/DataItem.cpp
     ${source_path}/Node.cpp
     ${source_path}/Line.cpp
-    ${source_path}/TextureMap.cpp
-    ${source_path}/ColorMap.cpp
-    ${source_path}/MappingValue.cpp
-    ${source_path}/PropertyExtensions.cpp
     ${source_path}/Tools.cpp
 )
 
@@ -65,11 +61,6 @@ set(api_includes
     ${include_path}/DataItem.h
     ${include_path}/Node.h
     ${include_path}/Line.h
-    ${include_path}/TextureMap.h
-    ${include_path}/ColorMap.h
-    ${include_path}/MappingValue.h
-    ${include_path}/PropertyExtensions.h
-    ${include_path}/PropertyExtensions.hpp
     ${include_path}/Tools.h
 )
 

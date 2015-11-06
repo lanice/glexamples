@@ -9,11 +9,13 @@
  
 #include <reflectionzeug/Object.h>
 
-#include "TextureMap.h"
-#include "MappingValue.h"
+#include "attributemapping_api.h"
 
 
 class MappingConfigList;
+
+
+typedef float MappingValue;
 
 
 /**
@@ -98,8 +100,8 @@ public:
     int textureID() const;
     void setTextureID(int id);
 
-    TextureMap texture() const;
-    void setTexture(const TextureMap & texture);
+    std::string texture() const;
+    void setTexture(const std::string & texture);
 
     int colorMapID() const;
     void setColorMapID(int id);
@@ -166,7 +168,7 @@ protected:
 
     // Static configuration values
     int                      m_textureID;        ///< ID of used texture
-    TextureMap               m_texture;          ///< Texture
+    std::string              m_texture;          ///< Texture
     int                      m_colorMapID;       ///< ID of used color map
     std::string              m_colorMap;         ///< Color map
     int                      m_geometryType;     ///< Geometry type: 0 = discard, 1 = tubes, 2 = sphere

@@ -3,7 +3,6 @@
 
 #include "MappingConfig.h"
 #include "Tools.h"
-#include "PropertyExtensions.h"
 
 
 void copyConfig(MappingConfig * config, const reflectionzeug::Variant & values);
