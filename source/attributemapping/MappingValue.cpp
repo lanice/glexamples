@@ -2,6 +2,11 @@
 #include "MappingValue.h"
 
 
+MappingValue::MappingValue()
+: m_value(0.0f)
+{
+}
+
 MappingValue::MappingValue(float value)
 : m_value(value)
 {

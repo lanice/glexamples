@@ -9,17 +9,22 @@
 
 #include <globjects/globjects.h>
 #include <globjects/Program.h>
+#include <globjects/Texture.h>
 
 #include <gloperate/painter/TargetFramebufferCapability.h>
 #include <gloperate/painter/ViewportCapability.h>
 #include <gloperate/painter/PerspectiveProjectionCapability.h>
 #include <gloperate/painter/CameraCapability.h>
+#include <gloperate/resources/ResourceManager.h>
 
 #include <gloperate/primitives/AdaptiveGrid.h>
 
+#include "MappingConfigList.h"
 #include "DataSet.h"
 #include "Line.h"
 #include "Node.h"
+#include "Tools.h"
+#include "PropertyExtensions.h"
 
 
 using namespace gl;
@@ -34,13 +39,27 @@ AttributeMappingPainter::AttributeMappingPainter(gloperate::ResourceManager & re
 , m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
 , m_cameraCapability(addCapability(new gloperate::CameraCapability()))
 , m_dataSet(nullptr)
+, m_colorMap("color_gradient.png")
 , m_lineColor("Zero")
 , m_lineWidth("Zero")
 , m_nodeHeight("None")
 {
+    // List available color maps
+    m_colorMaps.push_back("color_gradient.png");
+    m_colorMaps.push_back("0000_diverging_red_green.png");
+    m_colorMaps.push_back("0001_diverging_blue_yellow.png");
+    m_colorMaps.push_back("0002_diverging_green_violet.png");
+    m_colorMaps.push_back("0003_diverging_violet_orange.png");
+    m_colorMaps.push_back("0004_diverging_cyan_mauve.png");
+    m_colorMaps.push_back("0005_hsv_saturation_orange.png");
+    m_colorMaps.push_back("0006_bbr_cool.png");
+
+    // List available texture maps
+    m_textureMaps.push_back("color_gradient.png");
+
     // Register properties
-//  addProperty<ColorMap>("ColorMap", this, &AttributeMappingPainter::getColorMap, &AttributeMappingPainter::setColorMap);
-//  PropertyGroup::property("ColorMap")->setOption("title", "Color map");
+    addProperty<std::string>("ColorMap", this, &AttributeMappingPainter::getColorMap, &AttributeMappingPainter::setColorMap);
+    PropertyGroup::property("ColorMap")->setOption("choices", m_colorMaps);
 
     addProperty<std::string>("LineColor", this, &AttributeMappingPainter::getLineColor, &AttributeMappingPainter::setLineColor);
     PropertyGroup::property("LineColor")->setOption("choices", std::vector<std::string>());
@@ -50,10 +69,27 @@ AttributeMappingPainter::AttributeMappingPainter(gloperate::ResourceManager & re
 
     addProperty<std::string>("NodeHeight", this, &AttributeMappingPainter::getNodeHeight,  &AttributeMappingPainter::setNodeHeight);
     PropertyGroup::property("NodeHeight")->setOption("choices", std::vector<std::string>());
+
+    MappingConfigList * mappingConfigs = new MappingConfigList();
+    mappingConfigs->setColorMaps(m_colorMaps);
+    mappingConfigs->setTextureMaps(m_textureMaps);
+    mappingConfigs->setNumConfigs(8);
+    addProperty(mappingConfigs);
 }
 
 AttributeMappingPainter::~AttributeMappingPainter()
 {
+}
+
+std::string AttributeMappingPainter::getColorMap() const
+{
+    return m_colorMap;
+}
+
+void AttributeMappingPainter::setColorMap(const std::string & colorMap)
+{
+    m_colorMap = colorMap;
+    m_colorMapTexture = nullptr;
 }
 
 std::string AttributeMappingPainter::getLineColor() const
@@ -150,6 +186,12 @@ void AttributeMappingPainter::onPaint()
     // Bind framebuffer
     fbo->bind(GL_FRAMEBUFFER);
 
+    // Update color map texture
+    if (!m_colorMapTexture.get())
+    {
+        m_colorMapTexture = m_resourceManager.load<globjects::Texture>("data/attributemapping/gradients/" + m_colorMap);
+    }
+
     // Clear image
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -169,13 +211,19 @@ void AttributeMappingPainter::onPaint()
     m_attrStorage->texture()->bind();
     m_program->setUniform("attributes", 0);
 
+    // Bind color map texture
+    m_attrStorage->texture()->bindActive(gl::GL_TEXTURE0 + 1);
+    gl::glActiveTexture(gl::GL_TEXTURE0 + 1);
+    m_colorMapTexture->bind();
+    m_program->setUniform("colorMap", 1);
+
     // Render lines
     m_program->use();
     m_program->setUniform("screenSize",                glm::vec2(m_viewportCapability->width(), m_viewportCapability->height()));
     m_program->setUniform("modelViewProjectionMatrix", modelViewProjection);
-    m_program->setUniform("lineColor",                 (int)(std::find(m_attributes.begin(), m_attributes.end(), m_lineColor)  - m_attributes.begin()) - 1);
-    m_program->setUniform("lineWidth",                 (int)(std::find(m_attributes.begin(), m_attributes.end(), m_lineWidth)  - m_attributes.begin()) - 1);
-    m_program->setUniform("nodeHeight",                (int)(std::find(m_attributes.begin(), m_attributes.end(), m_nodeHeight) - m_attributes.begin()) - 1);
+    m_program->setUniform("lineColor",                 Tools::indexOf(m_attributes, m_lineColor)  - 1);
+    m_program->setUniform("lineWidth",                 Tools::indexOf(m_attributes, m_lineWidth)  - 1);
+    m_program->setUniform("nodeHeight",                Tools::indexOf(m_attributes, m_nodeHeight) - 1);
     m_program->setUniform("numNodeAttributes",         m_attrStorage->numNodeAttributes());
     m_lineGeometry->draw();
     m_program->release();

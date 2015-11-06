@@ -1,32 +1,16 @@
 
 #include "MappingConfigList.h"
 
-#include <sstream>
-
+#include "MappingConfig.h"
+#include "Tools.h"
 #include "PropertyExtensions.h"
-
-
-std::string number(int num)
-{
-    std::stringstream stream;
-    stream << num;
-    return stream.str();
-}
-
-std::string number(float num)
-{
-    std::stringstream stream;
-    stream << num;
-    return stream.str();
-}
 
 
 void copyConfig(MappingConfig * config, const reflectionzeug::Variant & values);
 
 
-MappingConfigList::MappingConfigList(DynamicMappingStage * mappingStage)
+MappingConfigList::MappingConfigList()
 : reflectionzeug::Object("MappingConfig")
-, m_mappingStage(mappingStage)
 , m_styles(reflectionzeug::Variant::map())
 , m_presets(reflectionzeug::Variant::map())
 , m_preset("Default")
@@ -89,8 +73,8 @@ void MappingConfigList::setPreset(const std::string & preset)
     reflectionzeug::Variant presetConfig = (*m_presets.asMap())[preset];
     if (presetConfig.asMap()) {
         // Set configuration (Config1 .. ConfigN)
-        for (int i=0; i<m_configs.size(); i++) {
-            std::string name = "Config" + number(i+1);
+        for (size_t i=0; i<m_configs.size(); i++) {
+            std::string name = "Config" + Tools::number(i+1);
             if (presetConfig.asMap()->count(name) > 0) {
                 reflectionzeug::AbstractProperty * prop = this->property(name);
                 if (prop) {
@@ -129,7 +113,7 @@ int MappingConfigList::classificationIndex() const
     if (m_classification == "Focus+Context") {
         return -1;
     } else {
-        int index = m_attributes.indexOf(m_classification);
+        int index = Tools::indexOf(m_attributes, m_classification);
         if (index >= 0) {
             return index;
         } else {
@@ -175,7 +159,7 @@ bool MappingConfigList::checkUpdated()
 MappingConfig * MappingConfigList::getConfig(unsigned int index) const
 {
     // Get property
-    std::string name = "Config" + number((int)index+1);
+    std::string name = "Config" + Tools::number((int)index+1);
     const reflectionzeug::AbstractProperty *prop = this->property(name);
     if (prop) {
         const MappingConfig * config = dynamic_cast<const MappingConfig*>(prop);
@@ -188,12 +172,12 @@ MappingConfig * MappingConfigList::getConfig(unsigned int index) const
     return nullptr;
 }
 
-int MappingConfigList::numConfigs() const
+unsigned int MappingConfigList::numConfigs() const
 {
     return m_configs.size();
 }
 
-void MappingConfigList::setNumConfigs(int numConfigs)
+void MappingConfigList::setNumConfigs(unsigned int numConfigs)
 {
     // Remove all configurations from property group
     for (auto it = m_configs.begin(); it != m_configs.end(); ++it) {
@@ -206,17 +190,17 @@ void MappingConfigList::setNumConfigs(int numConfigs)
     if (m_configs.size() > numConfigs) {
         // Remove surplus configurations
         while (m_configs.size() > numConfigs) {
-            MappingConfig * config = m_configs.last();
+            MappingConfig * config = m_configs[m_configs.size()-1];
             if (config) {
                 delete config;
             }
-            m_configs.removeLast();
+            m_configs.pop_back();
         }
     } else if (m_configs.size() < numConfigs) {
         // Add new configurations
-        for (int i=m_configs.size(); i<numConfigs; i++) {
-            MappingConfig * config = new MappingConfig(this, true, "Config" + number(i+1));
-            m_configs.append(config);
+        for (size_t i=m_configs.size(); i<numConfigs; i++) {
+            MappingConfig * config = new MappingConfig(this, true, "Config" + Tools::number(i+1));
+            m_configs.push_back(config);
         }
     }
 
@@ -224,7 +208,7 @@ void MappingConfigList::setNumConfigs(int numConfigs)
     int index = 1;
     for (auto it = m_configs.begin(); it != m_configs.end(); ++it) {
         MappingConfig * config = *it;
-        std::string title = "Config #" + number(index);
+        std::string title = "Config #" + Tools::number(index);
         config->setOption("title", title);
         addProperty(config);
         index++;
@@ -252,9 +236,9 @@ void MappingConfigList::setStylePreset(const std::string & name, const reflectio
     }
 
     // Update style-choices in properties
-    for (int i=0; i<m_configs.size(); i++) {
+    for (size_t i=0; i<m_configs.size(); i++) {
         // Get configuration
-        std::string name = "Config" + number(i+1);
+        std::string name = "Config" + Tools::number(i+1);
         reflectionzeug::AbstractProperty * prop = this->property(name);
         MappingConfig * config = (prop ? dynamic_cast<MappingConfig*>(prop) : nullptr);
         if (config) {
@@ -263,7 +247,7 @@ void MappingConfigList::setStylePreset(const std::string & name, const reflectio
 
             // Get LOD configurations
             for (int j=0; j<4; j++) {
-                std::string name = "Lod" + number((int)j+1);
+                std::string name = "Lod" + Tools::number(j+1);
                 reflectionzeug::AbstractProperty *prop = config->property(name);
                 MappingConfig * lod = (prop ? dynamic_cast<MappingConfig*>(prop) : nullptr);
                 if (lod) {
@@ -293,6 +277,11 @@ void MappingConfigList::setConfigPreset(const std::string & name, const reflecti
     PropertyGroup::property("Preset")->setOption("choices", styles);
 }
 
+const std::vector<std::string> & MappingConfigList::attributes() const
+{
+    return m_attributes;
+}
+
 void MappingConfigList::setAttributes(const std::vector<std::string> & attributes)
 {
     m_attributes = attributes;
@@ -306,6 +295,26 @@ void MappingConfigList::setAttributes(const std::vector<std::string> & attribute
         MappingConfig * config = *it;
         config->setAttributes(attributes);        
     }
+}
+
+const std::vector<std::string> & MappingConfigList::colorMaps() const
+{
+    return m_colorMaps;
+}
+
+void MappingConfigList::setColorMaps(const std::vector<std::string> & colorMaps)
+{
+    m_colorMaps = colorMaps;
+}
+
+const std::vector<std::string> & MappingConfigList::textureMaps() const
+{
+    return m_textureMaps;
+}
+
+void MappingConfigList::setTextureMaps(const std::vector<std::string> & textureMaps)
+{
+    m_textureMaps = textureMaps;
 }
 
 void copyConfig(MappingConfig * config, const reflectionzeug::Variant & values)
@@ -332,7 +341,7 @@ void copyConfig(MappingConfig * config, const reflectionzeug::Variant & values)
 
     // Copy LODs
     for (int i=0; i<4; i++) {
-        std::string name = "Lod" + number(i+1);
+        std::string name = "Lod" + Tools::number(i+1);
         if (values.asMap()->count(name) > 0) {
             reflectionzeug::AbstractProperty * prop = config->property(name);
             if (prop) {

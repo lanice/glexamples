@@ -55,7 +55,8 @@ set(LINUX_COMPILE_FLAGS
       -Wno-error=strict-aliasing
 
     # -Werror=return-type -> missing returns in functions and methods are handled as errors which stops the compilation
-    
+
+      -fvisibility=hidden
 )
 
 set(DEFAULT_COMPILE_FLAGS

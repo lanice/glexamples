@@ -7,6 +7,8 @@
 
 #include <glm/glm.hpp>
 
+#include "attributemapping_api.h"
+
 
 class Node;
 class Line;
@@ -16,7 +18,7 @@ class Line;
 *  @brief
 *    Contains a data set of lines, edges, and/or nodes
 */
-class DataSet
+class ATTRIBUTEMAPPING_API DataSet
 {
 public:
     /**

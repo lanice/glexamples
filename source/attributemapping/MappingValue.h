@@ -2,6 +2,9 @@
 #pragma once
 
 
+#include "attributemapping_api.h"
+
+
 /**
 *  @brief
 *    Attribute value describing either a static value (>= 0.0), or mapping a property value (< 0.0)
@@ -10,9 +13,11 @@
 *    If value is >= 0.0, (value) is used as the actual static attribute value.
 *    If value is <  0.0, (value * (-1) - 1) is the index of the property that is mapped to the actual attribute value.
 */
-class MappingValue
+class ATTRIBUTEMAPPING_API MappingValue
 {
 public:
+    MappingValue();
+
     /**
     *  @brief
     *    Constructor
@@ -20,7 +25,7 @@ public:
     *  @param[in] value
     *    Value
     */
-    MappingValue(float value = 0.0f);
+    MappingValue(float value);
 
     /**
     *  @brief

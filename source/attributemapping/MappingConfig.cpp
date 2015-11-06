@@ -3,6 +3,7 @@
 
 #include "MappingConfigList.h"
 #include "PropertyExtensions.h"
+#include "Tools.h"
 
 
 MappingConfig::MappingConfig(MappingConfigList * configList, bool useLod, std::string name)
@@ -12,9 +13,9 @@ MappingConfig::MappingConfig(MappingConfigList * configList, bool useLod, std::s
 , m_updated(true)
 , m_style("Default")
 , m_textureID(1)
-, m_texture(configList->mappingStage()->m_textureList[1])
+, m_texture(configList->textureMaps()[0])
 , m_colorMapID(19)
-, m_colorMap(configList->mappingStage()->m_colorMapList[19])
+, m_colorMap(configList->colorMaps()[0])
 , m_geometryType(1)
 , m_tesselation(6)
 , m_minRadius(100.0f)
@@ -40,11 +41,11 @@ MappingConfig::MappingConfig(MappingConfigList * configList, bool useLod, std::s
     addProperty<int>("TextureID", this, &MappingConfig::textureID, &MappingConfig::setTextureID);
 
     auto * propTexture = addProperty<TextureMap>("Texture", this, &MappingConfig::texture, &MappingConfig::setTexture);
-    propTexture->setTextures(m_configList->mappingStage()->m_textureList);
+    propTexture->setTextures(m_configList->textureMaps());
 
     addProperty<int>("ColorMapID", this, &MappingConfig::colorMapID, &MappingConfig::setColorMapID);
 
-    addProperty<ColorMap>("ColorMap", this, &MappingConfig::colorMap, &MappingConfig::setColorMap);
+    addProperty<std::string>("ColorMap", this, &MappingConfig::colorMap, &MappingConfig::setColorMap);
     PropertyGroup::property("ColorMap")->setOption("title", "Color map");
 
     addProperty<int>("GeometryType", this, &MappingConfig::geometryType, &MappingConfig::setGeometryType);
@@ -100,7 +101,7 @@ MappingConfig::~MappingConfig()
 {
 }
 
-void MappingConfig::setAttributes(const QStringList & attributes)
+void MappingConfig::setAttributes(const std::vector<std::string> & attributes)
 {
     m_attributes = attributes;
 
@@ -210,7 +211,7 @@ void MappingConfig::setTextureID(int id)
     }
 
     // Update texture string
-    m_texture = m_configList->mappingStage()->m_textureList[id];
+    m_texture = m_configList->textureMaps()[id];
 }
 
 TextureMap MappingConfig::texture() const
@@ -224,7 +225,7 @@ void MappingConfig::setTexture(const TextureMap & texture)
     m_texture = texture;
 
     // Update chosen texture index
-    int index = m_configList->mappingStage()->m_textureList.indexOf(texture.filename());
+    int index = Tools::indexOf(m_configList->textureMaps(), texture.filename());
     setTextureID(index);
 }
 
@@ -245,22 +246,22 @@ void MappingConfig::setColorMapID(int id)
     }
 
     // Update color map string
-    m_colorMap = m_configList->mappingStage()->m_colorMapList[id];
+    m_colorMap = m_configList->colorMaps()[id];
 }
 
-ColorMap MappingConfig::colorMap() const
+std::string MappingConfig::colorMap() const
 {
     // Return color map
     return m_colorMap;
 }
 
-void MappingConfig::setColorMap(const ColorMap & colorMap)
+void MappingConfig::setColorMap(const std::string & colorMap)
 {
     // Set color map
     m_colorMap = colorMap;
 
     // Update chosen color map index
-    int index = m_configList->mappingStage()->m_colorMapList.indexOf(colorMap.toString());
+    int index = Tools::indexOf(m_configList->colorMaps(), colorMap);
     setColorMapID(index);
 }
 

@@ -26,6 +26,8 @@ set(libs
 
 # Compiler definitions
 
+add_definitions("-DATTRIBUTEMAPPING_EXPORTS")
+
 # for compatibility between glm 0.9.4 and 0.9.5
 add_definitions("-DGLM_FORCE_RADIANS")
 
@@ -38,6 +40,8 @@ set(source_path "${CMAKE_CURRENT_SOURCE_DIR}/")
 set(sources
     ${source_path}/plugin.cpp
     ${source_path}/AttributeMappingPainter.cpp
+    ${source_path}/MappingConfigList.cpp
+    ${source_path}/MappingConfig.cpp
     ${source_path}/LineGeometry.cpp
     ${source_path}/AttributeStorage.cpp
     ${source_path}/DataSet.cpp
@@ -46,10 +50,15 @@ set(sources
     ${source_path}/Line.cpp
     ${source_path}/TextureMap.cpp
     ${source_path}/ColorMap.cpp
+    ${source_path}/MappingValue.cpp
+    ${source_path}/PropertyExtensions.cpp
+    ${source_path}/Tools.cpp
 )
 
 set(api_includes
     ${include_path}/AttributeMappingPainter.h
+    ${include_path}/MappingConfigList.h
+    ${include_path}/MappingConfig.h
     ${include_path}/LineGeometry.h
     ${include_path}/AttributeStorage.h
     ${include_path}/DataSet.h
@@ -58,6 +67,10 @@ set(api_includes
     ${include_path}/Line.h
     ${include_path}/TextureMap.h
     ${include_path}/ColorMap.h
+    ${include_path}/MappingValue.h
+    ${include_path}/PropertyExtensions.h
+    ${include_path}/PropertyExtensions.hpp
+    ${include_path}/Tools.h
 )
 
 # Group source files

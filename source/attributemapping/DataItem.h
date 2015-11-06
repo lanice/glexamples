@@ -4,12 +4,14 @@
 
 #include <glm/glm.hpp>
 
+#include "attributemapping_api.h"
+
 
 /**
 *  @brief
 *    Base class for data items such as nodes, edges, or lines
 */
-class DataItem
+class ATTRIBUTEMAPPING_API DataItem
 {
 public:
     /**

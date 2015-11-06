@@ -4,12 +4,14 @@
 
 #include <string>
 
+#include "attributemapping_api.h"
+
 
 /**
 *  @brief
 *    Describes a color map (used for choosing color schemes via properties)
 */
-class ColorMap
+class ATTRIBUTEMAPPING_API ColorMap
 {
 public:
     /**
@@ -19,7 +21,7 @@ public:
     *  @param[in] filename
     *    Filename
     */
-    ColorMap(const std::string & filename);
+    ColorMap(const std::string & filename = "");
 
     /**
     *  @brief

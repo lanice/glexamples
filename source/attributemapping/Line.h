@@ -14,7 +14,7 @@ class Node;
 *  @brief
 *    Describes a line (list of connected nodes)
 */
-class Line : public DataItem
+class ATTRIBUTEMAPPING_API Line : public DataItem
 {
 public:
     /**

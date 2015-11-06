@@ -11,7 +11,7 @@
 *  @brief
 *    Describes a node or sample point
 */
-class Node : public DataItem
+class ATTRIBUTEMAPPING_API Node : public DataItem
 {
 public:
     /**

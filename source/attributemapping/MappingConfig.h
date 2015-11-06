@@ -9,7 +9,6 @@
  
 #include <reflectionzeug/Object.h>
 
-#include "ColorMap.h"
 #include "TextureMap.h"
 #include "MappingValue.h"
 
@@ -21,7 +20,7 @@ class MappingConfigList;
 *  @brief
 *    A configuration for the real-time mapping of attributes
 */
-class MappingConfig : public reflectionzeug::Object
+class ATTRIBUTEMAPPING_API MappingConfig : public reflectionzeug::Object
 {
 public:
     /**
@@ -105,8 +104,8 @@ public:
     int colorMapID() const;
     void setColorMapID(int id);
 
-    ColorMap colorMap() const;
-    void setColorMap(const ColorMap & colorMap);
+    std::string colorMap() const;
+    void setColorMap(const std::string & colorMap);
 
     int geometryType() const;
     void setGeometryType(int type);
@@ -169,7 +168,7 @@ protected:
     int                      m_textureID;        ///< ID of used texture
     TextureMap               m_texture;          ///< Texture
     int                      m_colorMapID;       ///< ID of used color map
-    ColorMap                 m_colorMap;         ///< Color map
+    std::string              m_colorMap;         ///< Color map
     int                      m_geometryType;     ///< Geometry type: 0 = discard, 1 = tubes, 2 = sphere
     int                      m_tesselation;      ///< Number of corners of each polygon
     float                    m_minRadius;        ///< Minimal radius

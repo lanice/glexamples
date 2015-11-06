@@ -9,6 +9,8 @@
 #include <globjects/base/ref_ptr.h>
 #include <globjects/Texture.h>
 
+#include "attributemapping_api.h"
+
 
 class DataSet;
 
@@ -17,7 +19,7 @@ class DataSet;
 *  @brief
 *    Storage that store/access attributes for each item (e.g., nodes or edges) on the GPU
 */
-class AttributeStorage : public globjects::Referenced
+class ATTRIBUTEMAPPING_API AttributeStorage : public globjects::Referenced
 {
 public:
     /**

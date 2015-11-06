@@ -5,6 +5,8 @@
 
 #include <reflectionzeug/property/AbstractVisitor.h>
 
+#include "Tools.h"
+
 
 namespace reflectionzeug
 {
@@ -17,28 +19,35 @@ MappingValueProperty::~MappingValueProperty()
 std::string MappingValueProperty::toString() const
 {
     std::string valueString;
+
+    // Check if value is set directly or is mapping to an attribute
     float value = this->value().value();
     if (value < 0.0f) {
+        // Get attribute
         int index = ((int)(-value) - 1);
-        if (index >= 0 && index < m_attributes.length()) {
+        if (index >= 0 && index < (int)m_attributes.size()) {
+            // Return name of attribute that is mapped
             valueString = m_attributes[index];
         }
     } else {
-        std::stringstream stream;
-        stream << value;
-        valueString = stream.str();
+        // Return direct value as a string
+        valueString = Tools::number(value);
     }
 
-    return valueString.toStdString();
+    return valueString;
 }
 
 bool MappingValueProperty::fromString(const std::string & string)
 {
-    int index = m_attributes.indexOf(string);
-    if (index >= 0 && index < m_attributes.length()) {
+    // Check if value is a attribute name or a direct value
+    int index = Tools::indexOf(m_attributes, string);
+    if (index >= 0 && index < (int)m_attributes.size()) {
+        // Set index of mapped attribute
         this->setValue((float)(-index - 1));
     } else {
-        this->setValue(string.toFloat());
+        // Set direct value
+        float value = std::stod(string);
+        this->setValue(value);
     }
 
     return true;
@@ -76,12 +85,12 @@ TextureProperty::~TextureProperty()
 
 std::string TextureProperty::toString() const
 {
-    return this->value().filename().toStdString();
+    return this->value().filename();
 }
 
 bool TextureProperty::fromString(const std::string & string)
 {
-    this->setValue(gtx::TextureMap(QString::fromStdString(string)));
+    this->setValue(TextureMap(string));
     return true;
 }
 
@@ -117,12 +126,12 @@ ColorMapProperty::~ColorMapProperty()
 
 std::string ColorMapProperty::toString() const
 {
-    return this->value().toString().toStdString();
+    return this->value().filename();
 }
 
 bool ColorMapProperty::fromString(const std::string & string)
 {
-    this->setValue(QString::fromStdString(string));
+    this->setValue(ColorMap(string));
     return true;
 }
 

@@ -6,6 +6,8 @@
 #include <globjects/base/ref_ptr.h>
 #include <globjects/VertexArray.h>
 
+#include "attributemapping_api.h"
+
 
 class DataSet;
 
@@ -14,7 +16,7 @@ class DataSet;
 *  @brief
 *    Geometry for lines
 */
-class LineGeometry : public globjects::Referenced
+class ATTRIBUTEMAPPING_API LineGeometry : public globjects::Referenced
 {
 public:
     /**

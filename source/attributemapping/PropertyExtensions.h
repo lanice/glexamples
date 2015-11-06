@@ -8,7 +8,6 @@
 #include <reflectionzeug/property/AbstractTypedProperty.h>
 #include <reflectionzeug/property/AbstractStringInterface.h>
 #include <reflectionzeug/property/Property.h>
-#include <reflectionzeug/property/extensions/QtProperties.h>
 
 #include "ColorMap.h"
 #include "TextureMap.h"
@@ -19,7 +18,7 @@ namespace reflectionzeug
 {
 
 
-class MappingValueProperty : public AbstractTypedProperty<MappingValue>
+class ATTRIBUTEMAPPING_API MappingValueProperty : public AbstractTypedProperty<MappingValue>
 {
 public:
     template <typename... Args>
@@ -49,7 +48,7 @@ struct PropertyTypeSelector<MappingValue>
 };
 
 
-class TextureProperty : public AbstractTypedProperty<TextureMap>
+class ATTRIBUTEMAPPING_API TextureProperty : public AbstractTypedProperty<TextureMap>
 {
 public:
     template <typename... Args>
@@ -79,7 +78,7 @@ struct PropertyTypeSelector<TextureMap>
 };
 
 
-class ColorMapProperty : public AbstractTypedProperty<ColorMap>
+class ATTRIBUTEMAPPING_API ColorMapProperty : public AbstractTypedProperty<ColorMap>
 {
 public:
     template <typename... Args>

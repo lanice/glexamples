@@ -16,6 +16,7 @@
 namespace globjects
 {
     class Program;
+    class Texture;
 }
 
 namespace gloperate
@@ -30,11 +31,14 @@ namespace gloperate
 class DataSet;
 
 
-class AttributeMappingPainter : public gloperate::Painter
+class ATTRIBUTEMAPPING_API AttributeMappingPainter : public gloperate::Painter
 {
 public:
     AttributeMappingPainter(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo);
     virtual ~AttributeMappingPainter();
+
+    std::string getColorMap() const;
+    void setColorMap(const std::string & colorMap);
 
     std::string getLineColor() const;
     void setLineColor(const std::string & attr);
@@ -63,15 +67,19 @@ protected:
     // Data
     DataSet                                            * m_dataSet;
 
+    // Options
+    std::string                                          m_colorMap;    ///< Color map
+    std::string                                          m_lineColor;   ///< Name of attribute that is mapped to color
+    std::string                                          m_lineWidth;   ///< Name of attribute that is mapped to width
+    std::string                                          m_nodeHeight;  ///< Name of attribute that is mapped to height
+    std::vector<std::string>                             m_attributes;  ///< List of available attributes
+    std::vector<std::string>                             m_colorMaps;   ///< List of available color maps
+    std::vector<std::string>                             m_textureMaps; ///< List of available texture maps
+
     // Rendering
     globjects::ref_ptr<gloperate::AdaptiveGrid>          m_grid;
     globjects::ref_ptr<LineGeometry>                     m_lineGeometry;
     globjects::ref_ptr<AttributeStorage>                 m_attrStorage;
     globjects::ref_ptr<globjects::Program>               m_program;
-
-    // Options
-    std::string                                          m_lineColor;   ///< Name of attribute that is mapped to color
-    std::string                                          m_lineWidth;   ///< Name of attribute that is mapped to width
-    std::string                                          m_nodeHeight;  ///< Name of attribute that is mapped to height
-    std::vector<std::string>                             m_attributes;  ///< List of available attributes
+    globjects::ref_ptr<globjects::Texture>               m_colorMapTexture;
 };

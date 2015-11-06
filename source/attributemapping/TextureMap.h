@@ -4,12 +4,14 @@
 
 #include <string>
 
+#include "attributemapping_api.h"
+
 
 /**
 *  @brief
-*    Describes a texture map (used for choosing a texture via properties)
+*    Describes a texture map (used for choosing textures via properties)
 */
-class TextureMap
+class ATTRIBUTEMAPPING_API TextureMap
 {
 public:
     /**
@@ -19,7 +21,7 @@ public:
     *  @param[in] filename
     *    Filename
     */
-    TextureMap(const std::string & filename);
+    TextureMap(const std::string & filename = "");
 
     /**
     *  @brief
