@@ -10,16 +10,18 @@
 #include <globjects/globjects.h>
 #include <globjects/Program.h>
 #include <globjects/Texture.h>
+#include <globjects/Buffer.h>
+#include <globjects/UniformBlock.h>
 
 #include <gloperate/painter/TargetFramebufferCapability.h>
 #include <gloperate/painter/ViewportCapability.h>
 #include <gloperate/painter/PerspectiveProjectionCapability.h>
 #include <gloperate/painter/CameraCapability.h>
 #include <gloperate/resources/ResourceManager.h>
-
 #include <gloperate/primitives/AdaptiveGrid.h>
 
 #include "MappingConfigList.h"
+#include "MappingConfig.h"
 #include "DataSet.h"
 #include "Line.h"
 #include "Node.h"
@@ -38,6 +40,7 @@ AttributeMappingPainter::AttributeMappingPainter(gloperate::ResourceManager & re
 , m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
 , m_cameraCapability(addCapability(new gloperate::CameraCapability()))
 , m_dataSet(nullptr)
+, m_configs(nullptr)
 , m_colorMap("color_gradient.png")
 , m_lineColor("Zero")
 , m_lineWidth("Zero")
@@ -54,7 +57,10 @@ AttributeMappingPainter::AttributeMappingPainter(gloperate::ResourceManager & re
     m_colorMaps.push_back("0006_bbr_cool.png");
 
     // List available texture maps
-    m_textureMaps.push_back("color_gradient.png");
+    m_textureMaps.push_back("tube_texture_none.png");
+    m_textureMaps.push_back("tube_texture_arrow.png");
+    m_textureMaps.push_back("tube_texture_grid.png");
+    m_textureMaps.push_back("tube_texture_daytime.png");
 
     // Register properties
     addProperty<std::string>("ColorMap", this, &AttributeMappingPainter::getColorMap, &AttributeMappingPainter::setColorMap);
@@ -69,11 +75,11 @@ AttributeMappingPainter::AttributeMappingPainter(gloperate::ResourceManager & re
     addProperty<std::string>("NodeHeight", this, &AttributeMappingPainter::getNodeHeight,  &AttributeMappingPainter::setNodeHeight);
     PropertyGroup::property("NodeHeight")->setOption("choices", std::vector<std::string>());
 
-    MappingConfigList * mappingConfigs = new MappingConfigList();
-    mappingConfigs->setColorMaps(m_colorMaps);
-    mappingConfigs->setTextureMaps(m_textureMaps);
-    mappingConfigs->setNumConfigs(8);
-    addProperty(mappingConfigs);
+    m_configs = new MappingConfigList();
+    m_configs->setColorMaps(m_colorMaps);
+    m_configs->setTextureMaps(m_textureMaps);
+    m_configs->setNumConfigs(8);
+    addProperty(m_configs);
 }
 
 AttributeMappingPainter::~AttributeMappingPainter()
@@ -148,6 +154,12 @@ void AttributeMappingPainter::onInitialize()
         Shader::fromFile(GL_GEOMETRY_SHADER, "data/attributemapping/shaders/ColorMap.glsl")
     );
 
+    // Create texture array for color maps
+    createColorMaps();
+
+    // Create texture array for textures
+    createTextureMaps();
+
     // Initialize camera
     static const auto zNear = 0.3f, zFar = 15.f, fovy = 50.f;
     m_projectionCapability->setZNear(zNear);
@@ -205,6 +217,11 @@ void AttributeMappingPainter::onPaint()
     m_grid->update(eye, modelViewProjection);
     m_grid->draw();
 
+    // Update mapping configuration
+    if (m_configs->checkUpdated() || !m_configData.get()) {
+        uploadConfig();
+    }
+
     // Bind attribute texture
     m_attrStorage->texture()->bindActive(gl::GL_TEXTURE0);
     gl::glActiveTexture(gl::GL_TEXTURE0);
@@ -216,6 +233,25 @@ void AttributeMappingPainter::onPaint()
     gl::glActiveTexture(gl::GL_TEXTURE0 + 1);
     m_colorMapTexture->bind();
     m_program->setUniform("colorMap", 1);
+
+    // Bind color maps texture
+    m_colorMapsTex->bindActive(gl::GL_TEXTURE0 + 2);
+    gl::glActiveTexture(gl::GL_TEXTURE0 + 2);
+    m_colorMapsTex->bind();
+    m_program->setUniform("colorMaps", 2);
+
+    // Bind texture maps texture
+    m_textureMapsTex->bindActive(gl::GL_TEXTURE0 + 3);
+    gl::glActiveTexture(gl::GL_TEXTURE0 + 3);
+    m_textureMapsTex->bind();
+    m_program->setUniform("textures", 3);
+
+    // Bind configurations uniform block
+    /*
+    globjects::UniformBlock * uniformBlock = m_program->uniformBlock("CONFIG");
+    uniformBlock->setBinding(0);
+    m_configData->bindRange(gl::GL_UNIFORM_BUFFER, 0, 0, 20 * sizeof(float) * m_configs->numConfigs());
+    */
 
     // Render lines
     m_program->use();
@@ -288,4 +324,134 @@ void AttributeMappingPainter::generateTestData()
     PropertyGroup::property("LineColor") ->setOption("choices", m_attributes);
     PropertyGroup::property("LineWidth") ->setOption("choices", m_attributes);
     PropertyGroup::property("NodeHeight")->setOption("choices", m_attributes);
+}
+
+void AttributeMappingPainter::createTextureMaps()
+{
+    int width  = 256;
+    int height = 256;
+
+    size_t numImages = m_textureMaps.size();
+
+    unsigned char * buffer = new unsigned char[numImages * width * height * 4];
+
+    for (size_t i=0; i<numImages; i++)
+    {
+        std::string filename = "data/attributemapping/textures/" + m_textureMaps[numImages - 1 - i];
+
+        globjects::Texture * texture = m_resourceManager.load<globjects::Texture>(filename);
+        if (texture) {
+            std::vector<unsigned char> image = texture->getImage(0, GL_RGBA, GL_UNSIGNED_BYTE);
+
+            for (int y=0; y<height; y++)
+            {
+                for (int x=0; x<width; x++)
+                {
+                    buffer[(i * width * height + y * width + x) * 4 + 0] = image[(y * width + x) * 4 + 0];
+                    buffer[(i * width * height + y * width + x) * 4 + 1] = image[(y * width + x) * 4 + 1];
+                    buffer[(i * width * height + y * width + x) * 4 + 2] = image[(y * width + x) * 4 + 2];
+                    buffer[(i * width * height + y * width + x) * 4 + 3] = image[(y * width + x) * 4 + 3];
+                }
+            }
+        }
+    }
+
+    // Create texture
+    globjects::Texture * texture = new globjects::Texture(gl::GL_TEXTURE_2D_ARRAY);
+    texture->storage3D(1, gl::GL_RGBA8, width, height, numImages);
+    texture->subImage3D(0, 0, 0, 0, width, height, numImages, gl::GL_RGBA, gl::GL_UNSIGNED_BYTE, buffer);
+    texture->setParameter(gl::GL_TEXTURE_MIN_FILTER, gl::GL_LINEAR);
+    texture->setParameter(gl::GL_TEXTURE_MAG_FILTER, gl::GL_LINEAR);
+    texture->setParameter(gl::GL_TEXTURE_WRAP_S,     gl::GL_REPEAT);
+    texture->setParameter(gl::GL_TEXTURE_WRAP_T,     gl::GL_REPEAT);
+    m_textureMapsTex = texture;
+
+    delete [] buffer;
+}
+
+void AttributeMappingPainter::createColorMaps()
+{
+    int width  = 128;
+    int height = 1;
+
+    size_t numImages = m_colorMaps.size();
+
+    unsigned char * buffer = new unsigned char[numImages * width * height * 4];
+
+    for (size_t i=0; i<numImages; i++)
+    {
+        std::string filename = "data/attributemapping/gradients/" + m_colorMaps[numImages - 1 - i];
+
+        globjects::Texture * texture = m_resourceManager.load<globjects::Texture>(filename);
+        if (texture) {
+            std::vector<unsigned char> image = texture->getImage(0, GL_RGBA, GL_UNSIGNED_BYTE);
+
+            for (int y=0; y<height; y++)
+            {
+                for (int x=0; x<width; x++)
+                {
+                    buffer[(i * width * height + y * width + x) * 4 + 0] = image[(y * width + x) * 4 + 0];
+                    buffer[(i * width * height + y * width + x) * 4 + 1] = image[(y * width + x) * 4 + 1];
+                    buffer[(i * width * height + y * width + x) * 4 + 2] = image[(y * width + x) * 4 + 2];
+                    buffer[(i * width * height + y * width + x) * 4 + 3] = image[(y * width + x) * 4 + 3];
+                }
+            }
+        }
+    }
+
+    // Create texture
+    globjects::Texture * texture = new globjects::Texture(gl::GL_TEXTURE_2D_ARRAY);
+    texture->storage3D(1, gl::GL_RGBA8, width, height, numImages);
+    texture->subImage3D(0, 0, 0, 0, width, height, numImages, gl::GL_RGBA, gl::GL_UNSIGNED_BYTE, buffer);
+    texture->setParameter(gl::GL_TEXTURE_MIN_FILTER, gl::GL_LINEAR);
+    texture->setParameter(gl::GL_TEXTURE_MAG_FILTER, gl::GL_LINEAR);
+    texture->setParameter(gl::GL_TEXTURE_WRAP_S,     gl::GL_CLAMP_TO_EDGE);
+    texture->setParameter(gl::GL_TEXTURE_WRAP_T,     gl::GL_CLAMP_TO_EDGE);
+    m_colorMapsTex = texture;
+
+    delete [] buffer;
+}
+
+void AttributeMappingPainter::uploadConfig()
+{
+    std::vector<float> configData;
+
+    // Get configurations
+    int numConfigs = m_configs->numConfigs();
+    for (int i=0; i<numConfigs; i++) {
+        MappingConfig * config = m_configs->getConfig(i);
+        if (!config) continue;
+
+        // Get LOD configurations
+        for (unsigned int j=1; j<=4; j++) {
+            MappingConfig * lod = config->getLodConfig(j);
+            if (!lod) continue;
+
+            // Copy configuration data into uniform buffer
+            configData.push_back(lod->radius());
+            configData.push_back(lod->color());
+            configData.push_back(lod->textureX());
+            configData.push_back(lod->textureY());
+            configData.push_back(lod->textureID());
+            configData.push_back(lod->colorMapID());
+            configData.push_back(lod->minRadius());
+            configData.push_back(lod->maxRadius());
+            configData.push_back(lod->stretchSize());
+            configData.push_back(lod->torsionSize());
+            configData.push_back(lod->animationSpeed());
+            configData.push_back((float)lod->tesselation());
+            configData.push_back(lod->upVector().x);
+            configData.push_back(lod->upVector().y);
+            configData.push_back(lod->upVector().z);
+            configData.push_back((float)lod->geometryType());
+            configData.push_back(lod->alpha());
+            configData.push_back(lod->positionX());
+            configData.push_back(lod->positionY());
+            configData.push_back(lod->positionZ());
+        }
+    }
+
+    // Create uniform buffer
+    m_configData = new globjects::Buffer();
+    m_configData->setData(configData, gl::GL_STATIC_DRAW);
 }

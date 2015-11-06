@@ -17,6 +17,7 @@ namespace globjects
 {
     class Program;
     class Texture;
+    class Buffer;
 }
 
 namespace gloperate
@@ -29,6 +30,7 @@ namespace gloperate
 }
 
 class DataSet;
+class MappingConfigList;
 
 
 class ATTRIBUTEMAPPING_API AttributeMappingPainter : public gloperate::Painter
@@ -55,6 +57,9 @@ protected:
     virtual void onPaint() override;
 
     void generateTestData();
+    void createTextureMaps();
+    void createColorMaps();
+    void uploadConfig();
 
 
 protected:
@@ -66,6 +71,7 @@ protected:
 
     // Data
     DataSet                                            * m_dataSet;
+    MappingConfigList                                  * m_configs;     ///< Mapping configurations
 
     // Options
     std::string                                          m_colorMap;    ///< Color map
@@ -82,4 +88,8 @@ protected:
     globjects::ref_ptr<AttributeStorage>                 m_attrStorage;
     globjects::ref_ptr<globjects::Program>               m_program;
     globjects::ref_ptr<globjects::Texture>               m_colorMapTexture;
+
+    globjects::ref_ptr<globjects::Texture>               m_textureMapsTex;
+    globjects::ref_ptr<globjects::Texture>               m_colorMapsTex;
+    globjects::ref_ptr<globjects::Buffer>                m_configData;      ///< Uniform buffer containing the mapping configurations
 };
