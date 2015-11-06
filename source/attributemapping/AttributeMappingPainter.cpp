@@ -274,7 +274,7 @@ void AttributeMappingPainter::onPaint()
     m_grid->draw();
 
     // Update mapping configuration
-    if (m_configs->checkUpdated() || !m_configData.get()) {
+    if (m_configs->checkUpdated() || !m_configDataTex.get()) {
         uploadConfig();
     }
 
@@ -338,10 +338,11 @@ void AttributeMappingPainter::onPaint()
         m_textureMapsTex->bind();
         m_programMapping->setUniform("textures", 2);
 
-        // Bind configurations uniform block
-        globjects::UniformBlock * uniformBlock = m_programMapping->uniformBlock("CONFIG");
-        uniformBlock->setBinding(0);
-        m_configData->bindRange(gl::GL_UNIFORM_BUFFER, 0, 0, 20 * sizeof(float) * m_configs->numConfigs());
+        // Bind configuration texture
+        m_configDataTex->bindActive(gl::GL_TEXTURE0 + 3);
+        gl::glActiveTexture(gl::GL_TEXTURE0 + 3);
+        m_configDataTex->bind();
+        m_programMapping->setUniform("config", 3);
 
         // Update shader uniforms
         m_programMapping->setUniform("viewMatrix",                viewMatrix);
@@ -561,7 +562,9 @@ void AttributeMappingPainter::uploadConfig()
         }
     }
 
-    // Create uniform buffer
-    m_configData = new globjects::Buffer();
-    m_configData->setData(configData, gl::GL_STATIC_DRAW);
+    // Create texture buffer
+    m_configDataTex = new globjects::Texture(gl::GL_TEXTURE_BUFFER);
+    globjects::Buffer * buffer = new globjects::Buffer();
+    buffer->setData(configData, gl::GL_STATIC_DRAW);
+    m_configDataTex->texBuffer(gl::GL_R32F, buffer);
 }

@@ -107,5 +107,5 @@ protected:
     globjects::ref_ptr<globjects::Texture>               m_colorMapTexture; ///< Texture containing the current color map (for line rendering)
     globjects::ref_ptr<globjects::Texture>               m_textureMapsTex;  ///< Texture containing all texture maps (for attribute mapping)
     globjects::ref_ptr<globjects::Texture>               m_colorMapsTex;    ///< Texture containing all color maps (for attribute mapping)
-    globjects::ref_ptr<globjects::Buffer>                m_configData;      ///< Uniform buffer containing the mapping configurations
+    globjects::ref_ptr<globjects::Texture>               m_configDataTex;   ///< Uniform buffer containing the mapping configurations
 };

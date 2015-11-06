@@ -11,8 +11,31 @@ layout (triangle_strip, max_vertices = 40) out;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #define MAX_CONFIGURATIONS  16
-#define NUM_LOD              4
+#define NUM_LOD             4
 
+#define CONFIG_RADIUS                 0
+#define CONFIG_COLOR                  1
+#define CONFIG_TEXTURE_X              2
+#define CONFIG_TEXTURE_Y              3
+#define CONFIG_TEXTURE_ID             4
+#define CONFIG_COLORMAP_ID            5
+#define CONFIG_MIN_RADIUS             6
+#define CONFIG_MAX_RADIUS             7
+#define CONFIG_SIZE_OF_SINGLE_STRETCH 8
+#define CONFIG_SIZE_OF_SINGLE_TORSION 9
+#define CONFIG_ANIMATION_SPEED        10
+#define CONFIG_TESSELATION            11
+#define CONFIG_UP_VECTOR_X            12
+#define CONFIG_UP_VECTOR_Y            13
+#define CONFIG_UP_VECTOR_Z            14
+#define CONFIG_GEOMETRY_TYPE          15
+#define CONFIG_ALPHA                  16
+#define CONFIG_POSITION_X             17
+#define CONFIG_POSITION_Y             18
+#define CONFIG_POSITION_Z             19
+#define NUM_CONFIG_VALUES             20
+
+/*
 struct Configuration {
     float radius;               // Index of attribute mapped to tube radius
     float color;                // Index of attribute mapped to color
@@ -38,6 +61,8 @@ layout(std140) uniform CONFIG
 {
     Configuration config[MAX_CONFIGURATIONS];
 };
+*/
+uniform samplerBuffer config;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -198,6 +223,11 @@ bool viewFrustumCulling(const in vec4 vertex)
               ((-V.w < V.z) && (V.z < V.w)) );
 }
 
+float readConfig(int configID, int index)
+{
+    return texelFetch(config, configID * NUM_CONFIG_VALUES + index).r;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Geometry #1: Tubes
@@ -341,9 +371,9 @@ void calculateVertexPosition(int nodeIndex, int i, int lineIndex, int configID)
     int ind = nodeIndex + i;
 
     // Get position of vertex according to configuration
-    float x = configValue(ind, lineIndex, config[configID].positionX);
-    float y = configValue(ind, lineIndex, config[configID].positionY);
-    float z = configValue(ind, lineIndex, config[configID].positionZ);
+    float x = configValue(ind, lineIndex, readConfig(configID, CONFIG_POSITION_X));
+    float y = configValue(ind, lineIndex, readConfig(configID, CONFIG_POSITION_Y));
+    float z = configValue(ind, lineIndex, readConfig(configID, CONFIG_POSITION_Z));
     vec4 pos1 = calculatePosition( vec3(x, y, z) );
 
     // Calculate position WITHOUT space-time-cube
@@ -365,21 +395,23 @@ void calculateVertexAttributes(int nodeIndex, int i, int lineIndex, int configID
 
     // Get vertex attributes according to configuration
     vertex[i].lineId              = lin;
-    vertex[i].radius              = normalizedConfigValue(ind, lin, config[configID].radius);
-    vertex[i].color               = normalizedConfigValue(ind, lin, config[configID].color);
-    vertex[i].textureX            = configValue(ind, lin, config[configID].textureX);
-    vertex[i].textureY            = configValue(ind, lin, config[configID].textureY);
-    vertex[i].textureID           = configValue(ind, lin, config[configID].textureID);
-    vertex[i].colorMapID          = configValue(ind, lin, config[configID].colorMapID);
-    vertex[i].minRadius           = configValue(ind, lin, config[configID].minRadius);
-    vertex[i].maxRadius           = configValue(ind, lin, config[configID].maxRadius);
-    vertex[i].sizeOfSingleStretch = configValue(ind, lin, config[configID].sizeOfSingleStretch);
-    vertex[i].sizeOfSingleTorsion = configValue(ind, lin, config[configID].sizeOfSingleTorsion);
-    vertex[i].animationSpeed      = configValue(ind, lin, config[configID].animationSpeed);
-    vertex[i].tesselation         = configValue(ind, lin, config[configID].tesselation);
-    vertex[i].geometryType        = configValue(ind, lin, config[configID].geometryType);
-    vertex[i].alpha               = normalizedConfigValue(ind, lin, config[configID].alpha);
-    vertex[i].upVector            = config[configID].upVector;
+    vertex[i].radius              = normalizedConfigValue(ind, lin, readConfig(configID, CONFIG_RADIUS));
+    vertex[i].color               = normalizedConfigValue(ind, lin, readConfig(configID, CONFIG_COLOR));
+    vertex[i].textureX            = configValue(ind, lin, readConfig(configID, CONFIG_TEXTURE_X));
+    vertex[i].textureY            = configValue(ind, lin, readConfig(configID, CONFIG_TEXTURE_Y));
+    vertex[i].textureID           = configValue(ind, lin, readConfig(configID, CONFIG_TEXTURE_ID));
+    vertex[i].colorMapID          = configValue(ind, lin, readConfig(configID, CONFIG_COLORMAP_ID));
+    vertex[i].minRadius           = configValue(ind, lin, readConfig(configID, CONFIG_MIN_RADIUS));
+    vertex[i].maxRadius           = configValue(ind, lin, readConfig(configID, CONFIG_MAX_RADIUS));
+    vertex[i].sizeOfSingleStretch = configValue(ind, lin, readConfig(configID, CONFIG_SIZE_OF_SINGLE_STRETCH));
+    vertex[i].sizeOfSingleTorsion = configValue(ind, lin, readConfig(configID, CONFIG_SIZE_OF_SINGLE_TORSION));
+    vertex[i].animationSpeed      = configValue(ind, lin, readConfig(configID, CONFIG_ANIMATION_SPEED));
+    vertex[i].tesselation         = configValue(ind, lin, readConfig(configID, CONFIG_TESSELATION));
+    vertex[i].geometryType        = configValue(ind, lin, readConfig(configID, CONFIG_GEOMETRY_TYPE));
+    vertex[i].alpha               = normalizedConfigValue(ind, lin, readConfig(configID, CONFIG_ALPHA));
+    vertex[i].upVector.x          = readConfig(configID, CONFIG_UP_VECTOR_X);
+    vertex[i].upVector.y          = readConfig(configID, CONFIG_UP_VECTOR_Y);
+    vertex[i].upVector.z          = readConfig(configID, CONFIG_UP_VECTOR_Z);
 }
 
 void main()
