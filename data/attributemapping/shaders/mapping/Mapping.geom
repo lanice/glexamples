@@ -10,8 +10,7 @@ layout (triangle_strip, max_vertices = 40) out;
 // Style Transfer Configuration
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define MAX_CONFIGURATIONS  16
-#define NUM_LOD             4
+#define NUM_LOD 4
 
 #define CONFIG_RADIUS                 0
 #define CONFIG_COLOR                  1
@@ -35,33 +34,6 @@ layout (triangle_strip, max_vertices = 40) out;
 #define CONFIG_POSITION_Z             19
 #define NUM_CONFIG_VALUES             20
 
-/*
-struct Configuration {
-    float radius;               // Index of attribute mapped to tube radius
-    float color;                // Index of attribute mapped to color
-    float textureX;             // Index of attribute mapped to texture coordinate X
-    float textureY;             // Index of attribute mapped to texture coordinate Y
-    float textureID;            // ID of used texture
-    float colorMapID;           // ID of used color map
-    float minRadius;            // Minimal radius
-    float maxRadius;            // Maximal radius
-    float sizeOfSingleStretch;  // Length of a texture repetition with single stretching
-    float sizeOfSingleTorsion;  // Value change leading to a complete 360° texture distortion
-    float animationSpeed;       // Animation speed of the texture (texture repetitions/second)
-    float tesselation;          // Number of corners of each polygon
-    vec3  upVector;             // Vector used to align the polygons
-    float geometryType;         // Geometry type: 0 = discard, 1 = tubes, 2 = sphere
-    float alpha;                // Alpha value (transparency)
-    float positionX;            // Index of attribute mapped to position coordinate X
-    float positionY;            // Index of attribute mapped to position coordinate Y
-    float positionZ;            // Index of attribute mapped to position coordinate Z
-};
-
-layout(std140) uniform CONFIG
-{
-    Configuration config[MAX_CONFIGURATIONS];
-};
-*/
 uniform samplerBuffer config;
 
 

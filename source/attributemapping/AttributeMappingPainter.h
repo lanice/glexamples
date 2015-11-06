@@ -18,7 +18,6 @@ namespace globjects
 {
     class Program;
     class Texture;
-    class Buffer;
 }
 
 namespace gloperate

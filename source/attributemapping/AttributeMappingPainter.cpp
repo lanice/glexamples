@@ -11,7 +11,6 @@
 #include <globjects/Program.h>
 #include <globjects/Texture.h>
 #include <globjects/Buffer.h>
-#include <globjects/UniformBlock.h>
 
 #include <gloperate/painter/TargetFramebufferCapability.h>
 #include <gloperate/painter/ViewportCapability.h>
