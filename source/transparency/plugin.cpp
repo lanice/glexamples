@@ -1,9 +1,11 @@
+
 #include <gloperate/plugin/plugin_api.h>
+
+#include <glexamples/glexamples-version.h>
 
 #include "screendoor/ScreenDoor.h"
 #include "stochastic/StochasticTransparency.h"
 
-#include <glexamples-version.h>
 
 GLOPERATE_PLUGIN_LIBRARY
 

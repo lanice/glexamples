@@ -1,4 +1,6 @@
+
 #pragma once
+
 
 #include <cstdint>
 
@@ -8,6 +10,7 @@
 class StochasticTransparency;
 
 enum class StochasticTransparencyOptimization { NoOptimization, AlphaCorrection, AlphaCorrectionAndDepthBased };
+
 
 class StochasticTransparencyOptions
 {

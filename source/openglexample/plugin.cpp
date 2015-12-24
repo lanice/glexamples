@@ -1,8 +1,10 @@
+
 #include <gloperate/plugin/plugin_api.h>
+
+#include <glexamples/glexamples-version.h>
 
 #include "OpenGLExample.h"
 
-#include <glexamples-version.h>
 
 GLOPERATE_PLUGIN_LIBRARY
 

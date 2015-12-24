@@ -1,3 +1,4 @@
+
 #include "StochasticTransparencyOptions.h"
 
 #include <glm/common.hpp>
@@ -10,12 +11,12 @@
 
 
 StochasticTransparencyOptions::StochasticTransparencyOptions(StochasticTransparency & painter)
-:   m_painter(painter)
-,   m_transparency(160u)
-,   m_optimization(StochasticTransparencyOptimization::AlphaCorrection)
-,   m_backFaceCulling(false)
-,   m_numSamples(8u)
-,   m_numSamplesChanged(true)
+: m_painter(painter)
+, m_transparency(160u)
+, m_optimization(StochasticTransparencyOptimization::AlphaCorrection)
+, m_backFaceCulling(false)
+, m_numSamples(8u)
+, m_numSamplesChanged(true)
 {   
     painter.addProperty<unsigned char>("transparency", this,
         &StochasticTransparencyOptions::transparency, 

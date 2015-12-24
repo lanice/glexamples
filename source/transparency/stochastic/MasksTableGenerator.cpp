@@ -1,3 +1,4 @@
+
 #include "MasksTableGenerator.h"
 
 #include <cassert>
@@ -5,10 +6,11 @@
 
 #include <glm/common.hpp>
 
-#include <widgetzeug/make_unique.hpp>
+#include <gloperate/base/make_unique.hpp>
 
 
-using widgetzeug::make_unique;
+using gloperate::make_unique;
+
 
 auto MasksTableGenerator::generateDistributions(unsigned int numSamples) -> std::unique_ptr<maskDistributions_t>
 {
@@ -16,7 +18,7 @@ auto MasksTableGenerator::generateDistributions(unsigned int numSamples) -> std:
 }
 
 MasksTableGenerator::MasksTableGenerator(unsigned int numSamples)
-:   m_numSamples{numSamples}
+: m_numSamples{numSamples}
 {
 }
 
@@ -49,10 +51,10 @@ void MasksTableGenerator::generateCombinations()
 }
 
 void MasksTableGenerator::generateCombinationsForK(
-    const std::bitset<8> & combination,
-    unsigned char offset,
-    unsigned char k,
-    std::vector<mask_t> & combinationMasks)
+  const std::bitset<8> & combination,
+  unsigned char offset,
+  unsigned char k,
+  std::vector<mask_t> & combinationMasks)
 {
     if (k == 0)
     {
@@ -69,8 +71,8 @@ void MasksTableGenerator::generateCombinationsForK(
 }
 
 void MasksTableGenerator::generateDistributionForAlpha(
-    unsigned int alphaIndex, 
-    maskDistribution_t & masks)
+  unsigned int alphaIndex, 
+  maskDistribution_t & masks)
 {
     const auto avgNumSamples = m_numSamples * (static_cast<float>(alphaIndex) / (s_alphaRes - 1));
     const auto lowNumSamples = glm::floor(avgNumSamples);
@@ -91,9 +93,9 @@ void MasksTableGenerator::generateDistributionForAlpha(
 }
 
 void MasksTableGenerator::copyMasks(
-    unsigned int numMasks,
-    const std::vector<mask_t> & fromMasks,
-    maskDistribution_t::iterator & toMaskIt)
+  unsigned int numMasks,
+  const std::vector<mask_t> & fromMasks,
+  maskDistribution_t::iterator & toMaskIt)
 {
     while (numMasks > 0)
     {        

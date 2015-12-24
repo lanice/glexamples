@@ -11,8 +11,7 @@
 #include <globjects/DebugMessage.h>
 #include <globjects/Program.h>
 
-#include <widgetzeug/make_unique.hpp>
-
+#include <gloperate/base/make_unique.hpp>
 #include <gloperate/base/RenderTargetType.h>
 
 #include <gloperate/painter/TargetFramebufferCapability.h>
@@ -29,7 +28,8 @@ using namespace gl;
 using namespace glm;
 using namespace globjects;
 
-using widgetzeug::make_unique;
+using gloperate::make_unique;
+
 
 EmptyExample::EmptyExample(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo)
 :   Painter("EmptyExample", resourceManager, pluginInfo)

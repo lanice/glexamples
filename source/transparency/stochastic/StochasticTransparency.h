@@ -1,4 +1,6 @@
+
 #pragma once
+
 
 #include <memory>
 #include <vector>
@@ -31,6 +33,7 @@ namespace gloperate
 }
 
 class StochasticTransparencyOptions;
+
 
 class StochasticTransparency : public gloperate::Painter
 {

@@ -1,3 +1,4 @@
+
 #include "StochasticTransparency.h"
 
 #include <iostream>
@@ -32,8 +33,6 @@
 
 #include <reflectionzeug/property/PropertyGroup.h>
 
-#include <widgetzeug/make_unique.hpp>
-
 #include "MasksTableGenerator.h"
 #include "StochasticTransparencyOptions.h"
 
@@ -42,15 +41,16 @@ using namespace gl;
 using namespace glm;
 using namespace globjects;
 
-using widgetzeug::make_unique;
+using gloperate::make_unique;
+
 
 StochasticTransparency::StochasticTransparency(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo)
-:   Painter("StochasticTransparency", resourceManager, pluginInfo)
-,   m_targetFramebufferCapability(addCapability(new gloperate::TargetFramebufferCapability()))
-,   m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
-,   m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
-,   m_cameraCapability(addCapability(new gloperate::CameraCapability()))
-,   m_options(new StochasticTransparencyOptions(*this))
+: Painter("StochasticTransparency", resourceManager, pluginInfo)
+, m_targetFramebufferCapability(addCapability(new gloperate::TargetFramebufferCapability()))
+, m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
+, m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
+, m_cameraCapability(addCapability(new gloperate::CameraCapability()))
+, m_options(new StochasticTransparencyOptions(*this))
 {
 }
 
