@@ -27,12 +27,12 @@
 #include <gloperate/primitives/Icosahedron.h>
 
 
-OpenGLExample::OpenGLExample(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo)
-:   Painter("EmptyExample", resourceManager, pluginInfo)
-,   m_targetFramebufferCapability(addCapability(new gloperate::TargetFramebufferCapability()))
-,   m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
-,   m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
-,   m_cameraCapability(addCapability(new gloperate::CameraCapability()))
+OpenGLExample::OpenGLExample(gloperate::ResourceManager & resourceManager, const cpplocate::ModuleInfo & moduleInfo)
+: Painter("EmptyExample", resourceManager, moduleInfo)
+, m_targetFramebufferCapability(addCapability(new gloperate::TargetFramebufferCapability()))
+, m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
+, m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
+, m_cameraCapability(addCapability(new gloperate::CameraCapability()))
 {
 }
 
@@ -45,8 +45,6 @@ void OpenGLExample::setupProjection()
 
 void OpenGLExample::onInitialize()
 {
-    // create program
-
     globjects::init();
 
 #ifdef __APPLE__

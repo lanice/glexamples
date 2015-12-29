@@ -32,7 +32,7 @@ namespace gloperate
 class OpenGLExample : public gloperate::Painter
 {
 public:
-    OpenGLExample(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo);
+    OpenGLExample(gloperate::ResourceManager & resourceManager, const cpplocate::ModuleInfo & moduleInfo);
     virtual ~OpenGLExample();
 
     void setupProjection();

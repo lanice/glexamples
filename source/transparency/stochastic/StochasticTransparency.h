@@ -38,7 +38,7 @@ class StochasticTransparencyOptions;
 class StochasticTransparency : public gloperate::Painter
 {
 public:
-    StochasticTransparency(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo);
+    StochasticTransparency(gloperate::ResourceManager & resourceManager, const cpplocate::ModuleInfo & moduleInfo);
     virtual ~StochasticTransparency() override;
     
 protected:

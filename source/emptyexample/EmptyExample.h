@@ -30,7 +30,7 @@ namespace gloperate
 class EmptyExample : public gloperate::Painter
 {
 public:
-    EmptyExample(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo);
+    EmptyExample(gloperate::ResourceManager & resourceManager, const cpplocate::ModuleInfo & moduleInfo);
     virtual ~EmptyExample();
 
     void setupProjection();

@@ -34,7 +34,7 @@ namespace gloperate
 class ScreenDoor : public gloperate::Painter
 {
 public:
-    ScreenDoor(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo);
+    ScreenDoor(gloperate::ResourceManager & resourceManager, const cpplocate::ModuleInfo & moduleInfo);
     virtual ~ScreenDoor();
     
 public:

@@ -44,8 +44,8 @@ using namespace globjects;
 using gloperate::make_unique;
 
 
-StochasticTransparency::StochasticTransparency(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo)
-: Painter("StochasticTransparency", resourceManager, pluginInfo)
+StochasticTransparency::StochasticTransparency(gloperate::ResourceManager & resourceManager, const cpplocate::ModuleInfo & moduleInfo)
+: Painter("StochasticTransparency", resourceManager, moduleInfo)
 , m_targetFramebufferCapability(addCapability(new gloperate::TargetFramebufferCapability()))
 , m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
 , m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))

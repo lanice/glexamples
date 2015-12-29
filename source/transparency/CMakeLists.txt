@@ -9,6 +9,7 @@ find_package(glbinding REQUIRED)
 find_package(globjects REQUIRED)
 find_package(gloperate REQUIRED)
 find_package(libzeug REQUIRED)
+find_package(cpplocate REQUIRED)
 
 
 # 
@@ -105,6 +106,7 @@ target_link_libraries(${target}
     PRIVATE
     ${DEFAULT_LIBRARIES}
     ${OPENGL_LIBRARIES}
+    cpplocate::cpplocate
     libzeug::reflectionzeug
     glbinding::glbinding
     globjects::globjects
