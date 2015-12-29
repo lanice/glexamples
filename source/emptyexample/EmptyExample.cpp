@@ -1,6 +1,10 @@
 
 #include "EmptyExample.h"
 
+#include <cpplocate/ModuleInfo.h>
+
+#include <iozeug/FilePath.h>
+
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -14,13 +18,11 @@
 
 #include <gloperate/base/make_unique.hpp>
 #include <gloperate/base/RenderTargetType.h>
-
 #include <gloperate/painter/TargetFramebufferCapability.h>
 #include <gloperate/painter/ViewportCapability.h>
 #include <gloperate/painter/PerspectiveProjectionCapability.h>
 #include <gloperate/painter/CameraCapability.h>
 #include <gloperate/painter/VirtualTimeCapability.h>
-
 #include <gloperate/primitives/AdaptiveGrid.h>
 #include <gloperate/primitives/Icosahedron.h>
 
@@ -39,6 +41,11 @@ EmptyExample::EmptyExample(gloperate::ResourceManager & resourceManager, const c
 , m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
 , m_cameraCapability(addCapability(new gloperate::CameraCapability()))
 {
+    // Get data path
+    m_dataPath = moduleInfo.value("dataPath");
+    m_dataPath = iozeug::FilePath(m_dataPath).path();
+    if (m_dataPath.size() > 0) m_dataPath = m_dataPath + "/";
+    else                       m_dataPath = "data/";
 }
 
 EmptyExample::~EmptyExample() = default;
@@ -72,8 +79,8 @@ void EmptyExample::onInitialize()
 
     m_program = new Program{};
     m_program->attach(
-        Shader::fromFile(GL_VERTEX_SHADER, "data/emptyexample/icosahedron.vert"),
-        Shader::fromFile(GL_FRAGMENT_SHADER, "data/emptyexample/icosahedron.frag")
+        Shader::fromFile(GL_VERTEX_SHADER, m_dataPath + "emptyexample/icosahedron.vert"),
+        Shader::fromFile(GL_FRAGMENT_SHADER, m_dataPath + "emptyexample/icosahedron.frag")
     );
 
     m_transformLocation = m_program->getUniformLocation("transform");

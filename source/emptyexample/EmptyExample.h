@@ -2,6 +2,7 @@
 #pragma once
 
 
+#include <string>
 #include <memory>
 
 #include <glbinding/gl/types.h>
@@ -42,13 +43,16 @@ protected:
 
 
 protected:
-    /* capabilities */
+    // Internal data
+    std::string m_dataPath;
+
+    // Capabilities
     gloperate::AbstractTargetFramebufferCapability * m_targetFramebufferCapability;
     gloperate::AbstractViewportCapability * m_viewportCapability;
     gloperate::AbstractPerspectiveProjectionCapability * m_projectionCapability;
     gloperate::AbstractCameraCapability * m_cameraCapability;
 
-    /* members */
+    // OpenGL objects
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
     globjects::ref_ptr<gloperate::Icosahedron> m_icosahedron;
     globjects::ref_ptr<globjects::Program> m_program;

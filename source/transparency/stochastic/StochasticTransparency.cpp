@@ -3,6 +3,10 @@
 
 #include <iostream>
 
+#include <cpplocate/ModuleInfo.h>
+
+#include <iozeug/FilePath.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/constants.hpp>
@@ -52,6 +56,11 @@ StochasticTransparency::StochasticTransparency(gloperate::ResourceManager & reso
 , m_cameraCapability(addCapability(new gloperate::CameraCapability()))
 , m_options(new StochasticTransparencyOptions(*this))
 {
+    // Get data path
+    m_dataPath = moduleInfo.value("dataPath");
+    m_dataPath = iozeug::FilePath(m_dataPath).path();
+    if (m_dataPath.size() > 0) m_dataPath = m_dataPath + "/";
+    else                       m_dataPath = "data/";
 }
 
 StochasticTransparency::~StochasticTransparency() = default;
@@ -164,7 +173,7 @@ void StochasticTransparency::setupProjection()
 void StochasticTransparency::setupDrawable()
 {
     // Load scene
-    const auto scene = m_resourceManager.load<gloperate::Scene>("data/transparency/transparency_scene.obj");
+    const auto scene = m_resourceManager.load<gloperate::Scene>(m_dataPath + "transparency/transparency_scene.obj");
     if (!scene)
     {
         std::cout << "Could not load file" << std::endl;
@@ -187,9 +196,9 @@ void StochasticTransparency::setupPrograms()
     static const auto transparentColorsShaders = "transparent_colors";
     static const auto compositingShaders = "compositing";
     
-    const auto initProgram = [] (globjects::ref_ptr<globjects::Program> & program, const char * shaders)
+    const auto initProgram = [this] (globjects::ref_ptr<globjects::Program> & program, const char * shaders)
     {
-        static const auto shaderPath = std::string{"data/transparency/"};
+        const auto shaderPath = std::string(m_dataPath + "transparency/");
         
         program = make_ref<Program>();
         program->attach(

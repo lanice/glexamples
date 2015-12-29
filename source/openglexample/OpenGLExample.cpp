@@ -1,6 +1,10 @@
 
 #include "OpenGLExample.h"
 
+#include <cpplocate/ModuleInfo.h>
+
+#include <iozeug/FilePath.h>
+
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -34,6 +38,11 @@ OpenGLExample::OpenGLExample(gloperate::ResourceManager & resourceManager, const
 , m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
 , m_cameraCapability(addCapability(new gloperate::CameraCapability()))
 {
+    // Get data path
+    m_dataPath = moduleInfo.value("dataPath");
+    m_dataPath = iozeug::FilePath(m_dataPath).path();
+    if (m_dataPath.size() > 0) m_dataPath = m_dataPath + "/";
+    else                       m_dataPath = "data/";
 }
 
 OpenGLExample::~OpenGLExample() = default;
@@ -79,8 +88,8 @@ void OpenGLExample::onInitialize()
 
     m_program = new globjects::Program;
     m_program->attach(
-        globjects::Shader::fromFile(gl::GL_VERTEX_SHADER, "data/openglexample/shader.vert"),
-        globjects::Shader::fromFile(gl::GL_FRAGMENT_SHADER, "data/openglexample/shader.frag")
+        globjects::Shader::fromFile(gl::GL_VERTEX_SHADER, m_dataPath + "openglexample/shader.vert"),
+        globjects::Shader::fromFile(gl::GL_FRAGMENT_SHADER, m_dataPath + "openglexample/shader.frag")
     );
 
     gl::glClearColor(1.0, 1.0, 1.0, 1.0);
