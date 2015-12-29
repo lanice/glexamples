@@ -1,4 +1,6 @@
+
 #pragma once
+
 
 #include <memory>
 
@@ -25,6 +27,7 @@ namespace gloperate
     class AbstractPerspectiveProjectionCapability;
     class AbstractCameraCapability;
 }
+
 
 class OpenGLExample : public gloperate::Painter
 {

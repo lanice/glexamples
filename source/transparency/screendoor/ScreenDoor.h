@@ -1,7 +1,8 @@
+
 #pragma once
 
-#include <memory>
 
+#include <memory>
 #include <vector>
 
 #include <glbinding/gl/types.h>

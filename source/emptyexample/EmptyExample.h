@@ -1,4 +1,6 @@
+
 #pragma once
+
 
 #include <memory>
 
@@ -24,6 +26,7 @@ namespace gloperate
     class AbstractCameraCapability;
 }
 
+
 class EmptyExample : public gloperate::Painter
 {
 public:
@@ -32,9 +35,11 @@ public:
 
     void setupProjection();
 
+
 protected:
     virtual void onInitialize() override;
     virtual void onPaint() override;
+
 
 protected:
     /* capabilities */

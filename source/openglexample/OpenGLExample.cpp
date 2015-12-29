@@ -1,3 +1,4 @@
+
 #include "OpenGLExample.h"
 
 #include <glm/gtc/constants.hpp>
@@ -10,25 +11,21 @@
 #include <globjects/logging.h>
 #include <globjects/DebugMessage.h>
 #include <globjects/Program.h>
-
-#include <widgetzeug/make_unique.hpp>
-
-#include <gloperate/base/RenderTargetType.h>
-
-#include <gloperate/painter/TargetFramebufferCapability.h>
-#include <gloperate/painter/ViewportCapability.h>
-#include <gloperate/painter/PerspectiveProjectionCapability.h>
-#include <gloperate/painter/CameraCapability.h>
-#include <gloperate/painter/VirtualTimeCapability.h>
-
-#include <gloperate/primitives/AdaptiveGrid.h>
-#include <gloperate/primitives/Icosahedron.h>
-
 #include <globjects/VertexAttributeBinding.h>
 #include <globjects/Program.h>
 #include <globjects/Shader.h>
 #include <globjects/Texture.h>
 #include <globjects/AttachedTexture.h>
+
+#include <gloperate/base/RenderTargetType.h>
+#include <gloperate/painter/TargetFramebufferCapability.h>
+#include <gloperate/painter/ViewportCapability.h>
+#include <gloperate/painter/PerspectiveProjectionCapability.h>
+#include <gloperate/painter/CameraCapability.h>
+#include <gloperate/painter/VirtualTimeCapability.h>
+#include <gloperate/primitives/AdaptiveGrid.h>
+#include <gloperate/primitives/Icosahedron.h>
+
 
 OpenGLExample::OpenGLExample(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo)
 :   Painter("EmptyExample", resourceManager, pluginInfo)

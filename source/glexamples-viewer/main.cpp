@@ -13,7 +13,7 @@
 
 #include <widgetzeug/dark_fusion_style.hpp>
 
-#include "glexamples-version.h"
+#include <glexamples/glexamples-version.h>
 
 
 class Application : public gloperate_qt::Application
