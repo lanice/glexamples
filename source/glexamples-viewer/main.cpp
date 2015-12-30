@@ -46,5 +46,8 @@ int main(int argc, char * argv[])
     gloperate_qt::Viewer viewer;
     viewer.show();
 
+    std::string painterName = (argc > 1) ? argv[1] : "EmptyExample";
+    viewer.loadPainter(painterName);
+
     return app.exec();
 }
