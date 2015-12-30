@@ -2,6 +2,7 @@
 #pragma once
 
 
+#include <string>
 #include <memory>
 #include <vector>
 
@@ -38,7 +39,7 @@ class StochasticTransparencyOptions;
 class StochasticTransparency : public gloperate::Painter
 {
 public:
-    StochasticTransparency(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo);
+    StochasticTransparency(gloperate::ResourceManager & resourceManager, const cpplocate::ModuleInfo & moduleInfo);
     virtual ~StochasticTransparency() override;
     
 protected:
@@ -67,19 +68,16 @@ protected:
     void composite();
 
 private:
-    /** \name Capabilities */
-    /** \{ */
-    
+    // Internal data
+    std::string m_dataPath;
+
+    // Capabilities
     gloperate::AbstractTargetFramebufferCapability * m_targetFramebufferCapability;
     gloperate::AbstractViewportCapability * m_viewportCapability;
     gloperate::AbstractPerspectiveProjectionCapability * m_projectionCapability;
     gloperate::AbstractCameraCapability * m_cameraCapability;
-    
-    /** \} */
 
-    /** \name Framebuffers and Textures */
-    /** \{ */
-    
+    // Framebuffers and Textures
     static const auto kOpaqueColorAttachment = gl::GL_COLOR_ATTACHMENT0;
     static const auto kTransparentColorAttachment = gl::GL_COLOR_ATTACHMENT1;
     static const auto kTotalAlphaAttachment = gl::GL_COLOR_ATTACHMENT2;
@@ -90,11 +88,7 @@ private:
     globjects::ref_ptr<globjects::Texture> m_totalAlphaAttachment;
     globjects::ref_ptr<globjects::Texture> m_depthAttachment;
     
-    /** \} */
-    
-    /** \name Programs */
-    /** \{ */
-    
+    // Programs
     globjects::ref_ptr<globjects::Program> m_totalAlphaProgram;
     
     globjects::ref_ptr<globjects::Program> m_alphaToCoverageProgram;
@@ -104,21 +98,11 @@ private:
     
     globjects::ref_ptr<globjects::Program> m_compositingProgram;
     
-    /** \} */
-    
-    /** \name Geometry */
-    /** \{ */
-    
+    // Geometry
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
     std::vector<std::unique_ptr<gloperate::PolygonalDrawable>> m_drawables;
     globjects::ref_ptr<gloperate::ScreenAlignedQuad> m_compositingQuad;
-    
-    /** \} */
 
-    /** \name Properties */
-    /** \{ */
-    
+    // Properties
     std::unique_ptr<StochasticTransparencyOptions> m_options;
-    
-    /** \} */
 };

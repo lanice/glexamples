@@ -2,6 +2,7 @@
 #pragma once
 
 
+#include <string>
 #include <memory>
 
 #include <glbinding/gl/types.h>
@@ -32,7 +33,7 @@ namespace gloperate
 class OpenGLExample : public gloperate::Painter
 {
 public:
-    OpenGLExample(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo);
+    OpenGLExample(gloperate::ResourceManager & resourceManager, const cpplocate::ModuleInfo & moduleInfo);
     virtual ~OpenGLExample();
 
     void setupProjection();
@@ -42,13 +43,16 @@ protected:
     virtual void onPaint() override;
 
 protected:
-    /* capabilities */
+    // Internal data
+    std::string m_dataPath;
+
+    // Capabilities
     gloperate::AbstractTargetFramebufferCapability * m_targetFramebufferCapability;
     gloperate::AbstractViewportCapability * m_viewportCapability;
     gloperate::AbstractPerspectiveProjectionCapability * m_projectionCapability;
     gloperate::AbstractCameraCapability * m_cameraCapability;
 
-    /* members */
+    // OpenGL objects
     globjects::ref_ptr<globjects::Buffer> m_vertices;
     globjects::ref_ptr<globjects::VertexArray> m_vao;
     globjects::ref_ptr<globjects::Program> m_program;

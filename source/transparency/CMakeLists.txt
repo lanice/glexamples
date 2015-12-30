@@ -9,6 +9,7 @@ find_package(glbinding REQUIRED)
 find_package(globjects REQUIRED)
 find_package(gloperate REQUIRED)
 find_package(libzeug REQUIRED)
+find_package(cpplocate REQUIRED)
 
 
 # 
@@ -105,6 +106,8 @@ target_link_libraries(${target}
     PRIVATE
     ${DEFAULT_LIBRARIES}
     ${OPENGL_LIBRARIES}
+    cpplocate::cpplocate
+    libzeug::iozeug
     libzeug::reflectionzeug
     glbinding::glbinding
     globjects::globjects
@@ -141,6 +144,35 @@ target_compile_options(${target}
 target_link_libraries(${target}
     PRIVATE
     ${DEFAULT_LINKER_OPTIONS}
+)
+
+
+# 
+# Module information file
+# 
+
+generate_module_info(${CMAKE_SHARED_LIBRARY_PREFIX}${target}
+    VALUES
+    name        "${target}"
+    version     "${META_VERSION}"
+    description "${META_PROJECT_DESCRIPTION}"
+    author      "${META_AUTHOR_ORGANIZATION}"
+
+    BUILD_VALUES
+    dataPath    "${PROJECT_SOURCE_DIR}/data"
+
+    INSTALL_VALUES
+    dataPath    "\${ModulePath}/../data"
+)
+
+export_module_info(${CMAKE_SHARED_LIBRARY_PREFIX}${target}
+    TARGET ${target}
+    FOLDER "ModuleInfo"
+)
+
+install_module_info(${CMAKE_SHARED_LIBRARY_PREFIX}${target}
+    DESTINATION ${INSTALL_PLUGINS}
+    COMPONENT runtime
 )
 
 
