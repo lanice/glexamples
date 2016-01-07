@@ -11,7 +11,7 @@
 #include <gloperate-qt/viewer/Application.h>
 #include <gloperate-qt/viewer/Viewer.h>
 
-#include <widgetzeug/dark_fusion_style.hpp>
+#include <widgetzeug/dark_fusion_style.h>
 
 #include <glexamples/glexamples-version.h>
 
