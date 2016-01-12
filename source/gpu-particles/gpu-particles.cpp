@@ -16,8 +16,6 @@
 
 #include <globjects/base/File.h>
 
-#include <widgetzeug/make_unique.hpp>
-
 #include <gloperate/base/RenderTargetType.h>
 
 #include <gloperate/painter/TargetFramebufferCapability.h>
@@ -38,11 +36,9 @@ using namespace glm;
 using namespace globjects;
 using namespace gloperate;
 
-using widgetzeug::make_unique;
 
-
-GpuParticles::GpuParticles(ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo)
-:   Painter("gpu-particles", resourceManager, pluginInfo)
+GpuParticles::GpuParticles(ResourceManager & resourceManager, const cpplocate::ModuleInfo & moduleInfo)
+:   Painter("gpu-particles", resourceManager, moduleInfo)
 ,   m_targetFramebufferCapability(addCapability(new TargetFramebufferCapability()))
 ,   m_viewportCapability(addCapability(new ViewportCapability()))
 ,   m_projectionCapability(addCapability(new PerspectiveProjectionCapability(m_viewportCapability)))

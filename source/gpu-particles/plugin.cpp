@@ -1,8 +1,9 @@
+
 #include <gloperate/plugin/plugin_api.h>
 
-#include "gpu-particles.h"
+#include <glexamples/glexamples-version.h>
 
-#include <glexamples-version.h>
+#include "gpu-particles.h"
 
 GLOPERATE_PLUGIN_LIBRARY
 

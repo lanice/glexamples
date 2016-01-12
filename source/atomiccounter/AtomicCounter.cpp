@@ -15,8 +15,6 @@
 #include <globjects/Framebuffer.h>
 #include <globjects/Buffer.h>
 
-#include <widgetzeug/make_unique.hpp>
-
 #include <gloperate/base/RenderTargetType.h>
 
 #include <gloperate/painter/TargetFramebufferCapability.h>
@@ -34,10 +32,9 @@ using namespace gl;
 using namespace glm;
 using namespace globjects;
 
-using widgetzeug::make_unique;
 
-AtomicCounter::AtomicCounter(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo)
-:   Painter("AtomicCounter", resourceManager, pluginInfo)
+AtomicCounter::AtomicCounter(gloperate::ResourceManager & resourceManager, const cpplocate::ModuleInfo & moduleInfo)
+:   Painter("AtomicCounter", resourceManager, moduleInfo)
 ,   m_targetFramebufferCapability(addCapability(new gloperate::TargetFramebufferCapability()))
 ,   m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
 ,   m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))

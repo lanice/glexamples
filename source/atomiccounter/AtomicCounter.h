@@ -35,7 +35,7 @@ enum class GBufferChoice { PostProcessed, Color, Normal, WorldCoord, Depth };
 class AtomicCounter : public gloperate::Painter
 {
 public:
-    AtomicCounter(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo);
+    AtomicCounter(gloperate::ResourceManager & resourceManager, const cpplocate::ModuleInfo & moduleInfo);
     virtual ~AtomicCounter();
 
     void cameraChanged();

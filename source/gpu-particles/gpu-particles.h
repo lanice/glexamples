@@ -32,7 +32,7 @@ protected:
     enum class ParticleTechnique { ComputeShaderTechnique, FragmentShaderTechnique, TransformFeedbackTechnique };
 
 public:
-    GpuParticles(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo);
+    GpuParticles(gloperate::ResourceManager & resourceManager, const cpplocate::ModuleInfo & moduleInfo);
     virtual ~GpuParticles();
 
     void cameraChanged();

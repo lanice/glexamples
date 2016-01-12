@@ -1,8 +1,9 @@
+
 #include <gloperate/plugin/plugin_api.h>
 
-#include "AtomicCounter.h"
+#include <glexamples/glexamples-version.h>
 
-#include <glexamples-version.h>
+#include "AtomicCounter.h"
 
 GLOPERATE_PLUGIN_LIBRARY
 
