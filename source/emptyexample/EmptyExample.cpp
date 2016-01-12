@@ -1,4 +1,9 @@
+
 #include "EmptyExample.h"
+
+#include <cpplocate/ModuleInfo.h>
+
+#include <iozeug/FilePath.h>
 
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -11,16 +16,13 @@
 #include <globjects/DebugMessage.h>
 #include <globjects/Program.h>
 
-#include <widgetzeug/make_unique.hpp>
-
+#include <gloperate/base/make_unique.hpp>
 #include <gloperate/base/RenderTargetType.h>
-
 #include <gloperate/painter/TargetFramebufferCapability.h>
 #include <gloperate/painter/ViewportCapability.h>
 #include <gloperate/painter/PerspectiveProjectionCapability.h>
 #include <gloperate/painter/CameraCapability.h>
 #include <gloperate/painter/VirtualTimeCapability.h>
-
 #include <gloperate/primitives/AdaptiveGrid.h>
 #include <gloperate/primitives/Icosahedron.h>
 
@@ -29,15 +31,21 @@ using namespace gl;
 using namespace glm;
 using namespace globjects;
 
-using widgetzeug::make_unique;
+using gloperate::make_unique;
 
-EmptyExample::EmptyExample(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo)
-:   Painter("EmptyExample", resourceManager, pluginInfo)
-,   m_targetFramebufferCapability(addCapability(new gloperate::TargetFramebufferCapability()))
-,   m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
-,   m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
-,   m_cameraCapability(addCapability(new gloperate::CameraCapability()))
+
+EmptyExample::EmptyExample(gloperate::ResourceManager & resourceManager, const cpplocate::ModuleInfo & moduleInfo)
+: Painter("EmptyExample", resourceManager, moduleInfo)
+, m_targetFramebufferCapability(addCapability(new gloperate::TargetFramebufferCapability()))
+, m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
+, m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
+, m_cameraCapability(addCapability(new gloperate::CameraCapability()))
 {
+    // Get data path
+    m_dataPath = moduleInfo.value("dataPath");
+    m_dataPath = iozeug::FilePath(m_dataPath).path();
+    if (m_dataPath.size() > 0) m_dataPath = m_dataPath + "/";
+    else                       m_dataPath = "data/";
 }
 
 EmptyExample::~EmptyExample() = default;
@@ -55,8 +63,6 @@ void EmptyExample::setupProjection()
 
 void EmptyExample::onInitialize()
 {
-    // create program
-
     globjects::init();
 
 #ifdef __APPLE__
@@ -73,8 +79,8 @@ void EmptyExample::onInitialize()
 
     m_program = new Program{};
     m_program->attach(
-        Shader::fromFile(GL_VERTEX_SHADER, "data/emptyexample/icosahedron.vert"),
-        Shader::fromFile(GL_FRAGMENT_SHADER, "data/emptyexample/icosahedron.frag")
+        Shader::fromFile(GL_VERTEX_SHADER, m_dataPath + "emptyexample/icosahedron.vert"),
+        Shader::fromFile(GL_FRAGMENT_SHADER, m_dataPath + "emptyexample/icosahedron.frag")
     );
 
     m_transformLocation = m_program->getUniformLocation("transform");

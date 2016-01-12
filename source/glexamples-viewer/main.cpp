@@ -11,9 +11,9 @@
 #include <gloperate-qt/viewer/Application.h>
 #include <gloperate-qt/viewer/Viewer.h>
 
-#include <widgetzeug/dark_fusion_style.hpp>
+#include <widgetzeug/dark_fusion_style.h>
 
-#include "glexamples-version.h"
+#include <glexamples/glexamples-version.h>
 
 
 class Application : public gloperate_qt::Application
@@ -45,6 +45,9 @@ int main(int argc, char * argv[])
 
     gloperate_qt::Viewer viewer;
     viewer.show();
+
+    std::string painterName = (argc > 1) ? argv[1] : "EmptyExample";
+    viewer.loadPainter(painterName);
 
     return app.exec();
 }

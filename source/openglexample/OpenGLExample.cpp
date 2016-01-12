@@ -1,4 +1,9 @@
+
 #include "OpenGLExample.h"
+
+#include <cpplocate/ModuleInfo.h>
+
+#include <iozeug/FilePath.h>
 
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -10,33 +15,34 @@
 #include <globjects/logging.h>
 #include <globjects/DebugMessage.h>
 #include <globjects/Program.h>
-
-#include <widgetzeug/make_unique.hpp>
-
-#include <gloperate/base/RenderTargetType.h>
-
-#include <gloperate/painter/TargetFramebufferCapability.h>
-#include <gloperate/painter/ViewportCapability.h>
-#include <gloperate/painter/PerspectiveProjectionCapability.h>
-#include <gloperate/painter/CameraCapability.h>
-#include <gloperate/painter/VirtualTimeCapability.h>
-
-#include <gloperate/primitives/AdaptiveGrid.h>
-#include <gloperate/primitives/Icosahedron.h>
-
 #include <globjects/VertexAttributeBinding.h>
 #include <globjects/Program.h>
 #include <globjects/Shader.h>
 #include <globjects/Texture.h>
 #include <globjects/AttachedTexture.h>
 
-OpenGLExample::OpenGLExample(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo)
-:   Painter("EmptyExample", resourceManager, pluginInfo)
-,   m_targetFramebufferCapability(addCapability(new gloperate::TargetFramebufferCapability()))
-,   m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
-,   m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
-,   m_cameraCapability(addCapability(new gloperate::CameraCapability()))
+#include <gloperate/base/RenderTargetType.h>
+#include <gloperate/painter/TargetFramebufferCapability.h>
+#include <gloperate/painter/ViewportCapability.h>
+#include <gloperate/painter/PerspectiveProjectionCapability.h>
+#include <gloperate/painter/CameraCapability.h>
+#include <gloperate/painter/VirtualTimeCapability.h>
+#include <gloperate/primitives/AdaptiveGrid.h>
+#include <gloperate/primitives/Icosahedron.h>
+
+
+OpenGLExample::OpenGLExample(gloperate::ResourceManager & resourceManager, const cpplocate::ModuleInfo & moduleInfo)
+: Painter("EmptyExample", resourceManager, moduleInfo)
+, m_targetFramebufferCapability(addCapability(new gloperate::TargetFramebufferCapability()))
+, m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
+, m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
+, m_cameraCapability(addCapability(new gloperate::CameraCapability()))
 {
+    // Get data path
+    m_dataPath = moduleInfo.value("dataPath");
+    m_dataPath = iozeug::FilePath(m_dataPath).path();
+    if (m_dataPath.size() > 0) m_dataPath = m_dataPath + "/";
+    else                       m_dataPath = "data/";
 }
 
 OpenGLExample::~OpenGLExample() = default;
@@ -48,8 +54,6 @@ void OpenGLExample::setupProjection()
 
 void OpenGLExample::onInitialize()
 {
-    // create program
-
     globjects::init();
 
 #ifdef __APPLE__
@@ -84,8 +88,8 @@ void OpenGLExample::onInitialize()
 
     m_program = new globjects::Program;
     m_program->attach(
-        globjects::Shader::fromFile(gl::GL_VERTEX_SHADER, "data/openglexample/shader.vert"),
-        globjects::Shader::fromFile(gl::GL_FRAGMENT_SHADER, "data/openglexample/shader.frag")
+        globjects::Shader::fromFile(gl::GL_VERTEX_SHADER, m_dataPath + "openglexample/shader.vert"),
+        globjects::Shader::fromFile(gl::GL_FRAGMENT_SHADER, m_dataPath + "openglexample/shader.frag")
     );
 
     gl::glClearColor(1.0, 1.0, 1.0, 1.0);

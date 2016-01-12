@@ -1,7 +1,9 @@
+
 #pragma once
 
-#include <memory>
 
+#include <string>
+#include <memory>
 #include <vector>
 
 #include <glbinding/gl/types.h>
@@ -33,7 +35,7 @@ namespace gloperate
 class ScreenDoor : public gloperate::Painter
 {
 public:
-    ScreenDoor(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo);
+    ScreenDoor(gloperate::ResourceManager & resourceManager, const cpplocate::ModuleInfo & moduleInfo);
     virtual ~ScreenDoor();
     
 public:
@@ -57,23 +59,26 @@ protected:
     void updateFramebuffer();
 
 protected:
-    /* capabilities */
+    // Internal data
+    std::string m_dataPath;
+
+    // Capabilities
     gloperate::AbstractTargetFramebufferCapability * m_targetFramebufferCapability;
     gloperate::AbstractViewportCapability * m_viewportCapability;
     gloperate::AbstractPerspectiveProjectionCapability * m_projectionCapability;
     gloperate::AbstractCameraCapability * m_cameraCapability;
 
-    /* members */
+    // OpenGL objects
     globjects::ref_ptr<globjects::Framebuffer> m_fbo;
     globjects::ref_ptr<globjects::Texture> m_colorAttachment;
     globjects::ref_ptr<globjects::Texture> m_depthAttachment;
-    
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
     globjects::ref_ptr<globjects::Program> m_program;
     gl::GLint m_transformLocation;
     gl::GLint m_transparencyLocation;
     std::vector<std::unique_ptr<gloperate::PolygonalDrawable>> m_drawables;
 
+    // Options
     bool m_multisampling;
     bool m_multisamplingChanged;
     float m_transparency;

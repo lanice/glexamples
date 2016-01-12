@@ -1,98 +1,151 @@
 
-# Target
-set(target glexamples-viewer)
-message(STATUS "App ${target}")
+# 
+# External dependencies
+# 
 
+find_package(OpenGL REQUIRED)
+find_package(GLM REQUIRED)
+find_package(glbinding REQUIRED)
+find_package(globjects REQUIRED)
+find_package(gloperate REQUIRED)
+find_package(libzeug REQUIRED)
+find_package(Qt5Core    5.1)
+find_package(Qt5Gui     5.1)
+find_package(Qt5Widgets 5.1) # this is important in order to get uic working 
+find_package(Qt5OpenGL  5.1)
 
-# External libraries
+# Enable automoc
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(AUTOMOC_MOC_OPTIONS PROPERTIES FOLDER CMakeAutomocTargets)
+set_property(GLOBAL PROPERTY AUTOMOC_FOLDER CMakeAutomocTargets)
 
-# Qt5
-
-# good resource: http://www.kdab.com/using-cmake-with-qt-5/
-
-# http://qt-project.org/forums/viewthread/30006/
-if(MSVC)
+# ENABLE CMP0020: Automatically link Qt executables to qtmain target on Windows.
+if (POLICY CMP0020)
     cmake_policy(SET CMP0020 NEW)
 endif()
 
-find_package(Qt5Core    5.1 REQUIRED)
-find_package(Qt5Gui     5.1 REQUIRED)
-find_package(Qt5Widgets 5.1 REQUIRED)
-find_package(Qt5OpenGL  5.1 REQUIRED)
 
+# 
+# Executable name and options
+# 
+
+# Target name
+set(target glexamples-viewer)
+
+# Exit here if required dependencies are not met
 if (NOT Qt5Core_FOUND)
-    message("App ${target} skipped: Qt5 not found")
+    message(STATUS "App ${target} skipped: Qt5 not found")
     return()
+else()
+    message(STATUS "App ${target}")
 endif()
 
-# Qt5 options
 
-set(CMAKE_AUTOMOC ON)
-
-
-# Includes
-
-include_directories(
-    BEFORE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}
-)
-
-
-# Libraries
-
-set(libs
-    ${GLEXAMPLES_DEPENDENCY_LIBRARIES}
-    Qt5::Core
-    Qt5::Gui
-    Qt5::Widgets
-    Qt5::OpenGL
-)
-
-
+# 
 # Sources
-
-set(headers
-    util.hpp
-)
+# 
 
 set(sources
     main.cpp
 )
 
 
+# 
+# Create executable
+# 
+
 # Build executable
+add_executable(${target}
+    MACOSX_BUNDLE
+    ${sources}
+)
 
-add_executable(${target} ${headers} ${sources})
-
-add_dependencies(${target} transparency-painters)
-add_dependencies(${target} emptyexample-painters)
-
-target_link_libraries(${target} ${libs})
+# Create namespaced alias
+add_executable(${META_PROJECT_NAME}::${target} ALIAS ${target})
 
 
-if(MSVC)
-    # -> msvc14 : declaration hides class member (problem in qt)
-    set(DEFAULT_COMPILE_FLAGS ${DEFAULT_COMPILE_FLAGS} /wd4458)
-endif()
-
-target_compile_options(${target} PRIVATE ${DEFAULT_COMPILE_FLAGS})
+# 
+# Project options
+# 
 
 set_target_properties(${target}
     PROPERTIES
-    LINKER_LANGUAGE              CXX
-    FOLDER                      "${IDE_FOLDER}"
-    COMPILE_DEFINITIONS_DEBUG   "${DEFAULT_COMPILE_DEFS_DEBUG}"
-    COMPILE_DEFINITIONS_RELEASE "${DEFAULT_COMPILE_DEFS_RELEASE}"
-    LINK_FLAGS_DEBUG            "${DEFAULT_LINKER_FLAGS_DEBUG}"
-    LINK_FLAGS_RELEASE          "${DEFAULT_LINKER_FLAGS_RELEASE}"
-    DEBUG_POSTFIX               "d${DEBUG_POSTFIX}")
+    ${DEFAULT_PROJECT_OPTIONS}
+    FOLDER "${IDE_FOLDER}"
+)
 
 
+# 
+# Include directories
+# 
+
+target_include_directories(${target}
+    PRIVATE
+    ${DEFAULT_INCLUDE_DIRECTORIES}
+    ${PROJECT_BINARY_DIR}/source/include
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${GLM_INCLUDE_DIR}
+    ${PROJECT_SOURCE_DIR}/source/gloperate/include
+    ${PROJECT_SOURCE_DIR}/source/gloperate-qt/include
+    ${PROJECT_BINARY_DIR}/source/include
+)
+
+
+# 
+# Libraries
+# 
+
+target_link_libraries(${target}
+    PRIVATE
+    ${DEFAULT_LIBRARIES}
+    Qt5::Core
+    Qt5::Gui
+    Qt5::Widgets
+    libzeug::widgetzeug
+    glbinding::glbinding
+    globjects::globjects
+    gloperate::gloperate
+    gloperate::gloperate-qt
+)
+
+
+# 
+# Compile definitions
+# 
+
+target_compile_definitions(${target}
+    PRIVATE
+    ${DEFAULT_COMPILE_DEFINITIONS}
+)
+
+
+# 
+# Compile options
+# 
+
+target_compile_options(${target}
+    PRIVATE
+    ${DEFAULT_COMPILE_OPTIONS}
+)
+
+
+# 
+# Linker options
+# 
+
+target_link_libraries(${target}
+    PRIVATE
+    ${DEFAULT_LINKER_OPTIONS}
+)
+
+
+# 
 # Deployment
+# 
 
+# Executable
 install(TARGETS ${target}
-    RUNTIME DESTINATION ${INSTALL_BIN}
-#   LIBRARY DESTINATION ${INSTALL_SHARED}
-#   ARCHIVE DESTINATION ${INSTALL_LIB}
+    RUNTIME DESTINATION ${INSTALL_BIN} COMPONENT runtime
+    BUNDLE  DESTINATION ${INSTALL_BIN} COMPONENT runtime
 )

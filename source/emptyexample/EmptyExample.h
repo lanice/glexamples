@@ -1,5 +1,8 @@
+
 #pragma once
 
+
+#include <string>
 #include <memory>
 
 #include <glbinding/gl/types.h>
@@ -24,26 +27,32 @@ namespace gloperate
     class AbstractCameraCapability;
 }
 
+
 class EmptyExample : public gloperate::Painter
 {
 public:
-    EmptyExample(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo);
+    EmptyExample(gloperate::ResourceManager & resourceManager, const cpplocate::ModuleInfo & moduleInfo);
     virtual ~EmptyExample();
 
     void setupProjection();
+
 
 protected:
     virtual void onInitialize() override;
     virtual void onPaint() override;
 
+
 protected:
-    /* capabilities */
+    // Internal data
+    std::string m_dataPath;
+
+    // Capabilities
     gloperate::AbstractTargetFramebufferCapability * m_targetFramebufferCapability;
     gloperate::AbstractViewportCapability * m_viewportCapability;
     gloperate::AbstractPerspectiveProjectionCapability * m_projectionCapability;
     gloperate::AbstractCameraCapability * m_cameraCapability;
 
-    /* members */
+    // OpenGL objects
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
     globjects::ref_ptr<gloperate::Icosahedron> m_icosahedron;
     globjects::ref_ptr<globjects::Program> m_program;

@@ -1,6 +1,11 @@
+
 #include "ScreenDoor.h"
 
 #include <iostream>
+
+#include <cpplocate/ModuleInfo.h>
+
+#include <iozeug/FilePath.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -31,25 +36,30 @@
 
 #include <reflectionzeug/property/PropertyGroup.h>
 
-#include <widgetzeug/make_unique.hpp>
-
 
 using namespace gl;
 using namespace glm;
 using namespace globjects;
 
-using widgetzeug::make_unique;
+using gloperate::make_unique;
 
-ScreenDoor::ScreenDoor(gloperate::ResourceManager & resourceManager, const reflectionzeug::Variant & pluginInfo)
-:   Painter("ScreenDoor", resourceManager, pluginInfo)
-,   m_targetFramebufferCapability(addCapability(new gloperate::TargetFramebufferCapability()))
-,   m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
-,   m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
-,   m_cameraCapability(addCapability(new gloperate::CameraCapability()))
-,   m_multisampling(false)
-,   m_multisamplingChanged(false)
-,   m_transparency(0.5)
+
+ScreenDoor::ScreenDoor(gloperate::ResourceManager & resourceManager, const cpplocate::ModuleInfo & moduleInfo)
+: Painter("ScreenDoor", resourceManager, moduleInfo)
+, m_targetFramebufferCapability(addCapability(new gloperate::TargetFramebufferCapability()))
+, m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
+, m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
+, m_cameraCapability(addCapability(new gloperate::CameraCapability()))
+, m_multisampling(false)
+, m_multisamplingChanged(false)
+, m_transparency(0.5)
 {    
+    // Get data path
+    m_dataPath = moduleInfo.value("dataPath");
+    m_dataPath = iozeug::FilePath(m_dataPath).path();
+    if (m_dataPath.size() > 0) m_dataPath = m_dataPath + "/";
+    else                       m_dataPath = "data/";
+
     setupPropertyGroup();
 }
 
@@ -221,7 +231,7 @@ void ScreenDoor::setupProjection()
 void ScreenDoor::setupDrawable()
 {
     // Load scene
-    const auto scene = m_resourceManager.load<gloperate::Scene>("data/transparency/transparency_scene.obj");
+    const auto scene = m_resourceManager.load<gloperate::Scene>(m_dataPath + "transparency/transparency_scene.obj");
     if (!scene)
     {
         std::cout << "Could not load file" << std::endl;
@@ -239,7 +249,7 @@ void ScreenDoor::setupDrawable()
 
 void ScreenDoor::setupProgram()
 {
-    static const auto shaderPath = std::string{"data/transparency/"};
+    static const auto shaderPath = std::string(m_dataPath + "transparency/");
     const auto shaderName = m_multisampling ? "screendoor_multisample" : "screendoor";
     
     const auto vertexShader = shaderPath + shaderName + ".vert";
