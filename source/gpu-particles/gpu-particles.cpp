@@ -198,34 +198,34 @@ void GpuParticles::step(const float delta)
 }
 
 void GpuParticles::reset(const bool particles)
+{
+    // initialize 3D Force Field (3D Texture)
+
+    static const ivec3 fdim(5, 5, 5); // this has center axises and allows for random rings etc..
+
+    std::vector<vec3> forces;
+    forces.resize(fdim.x * fdim.y * fdim.z);
+
+    srand(static_cast<unsigned int>(time(0)));
+
+    for (int z = 0; z < fdim.z; ++z)
+    for (int y = 0; y < fdim.y; ++y)
+    for (int x = 0; x < fdim.x; ++x)
     {
-        // initialize 3D Force Field (3D Texture)
+        const int i = z *  fdim.x * fdim.y + y * fdim.x + x;
+        const vec3 f(sphericalRand<float>(1.0));
 
-        static const ivec3 fdim(5, 5, 5); // this has center axises and allows for random rings etc..
-
-        std::vector<vec3> forces;
-        forces.resize(fdim.x * fdim.y * fdim.z);
-
-        srand(static_cast<unsigned int>(time(0)));
-
-        for (int z = 0; z < fdim.z; ++z)
-        for (int y = 0; y < fdim.y; ++y)
-        for (int x = 0; x < fdim.x; ++x)
-        {
-            const int i = z *  fdim.x * fdim.y + y * fdim.x + x;
-            const vec3 f(sphericalRand<float>(1.0));
-
-            forces[i] = f * (1.f - length(vec3(x, y, z)) / std::sqrt(3.f));
-        }
-
-        m_forces->image3D(0, GL_RGB32F, fdim.x, fdim.y, fdim.z, 0, GL_RGB, GL_FLOAT, forces.data());
-
-        if (!particles)
-            return;
-
-        m_timer.reset();
-        m_timer.update();
-
-        for (auto technique : m_techniques)
-            technique.second->reset();
+        forces[i] = f * (1.f - length(vec3(x, y, z)) / std::sqrt(3.f));
     }
+
+    m_forces->image3D(0, GL_RGB32F, fdim.x, fdim.y, fdim.z, 0, GL_RGB, GL_FLOAT, forces.data());
+
+    if (!particles)
+        return;
+
+    m_timer.reset();
+    m_timer.update();
+
+    for (auto technique : m_techniques)
+        technique.second->reset();
+}
