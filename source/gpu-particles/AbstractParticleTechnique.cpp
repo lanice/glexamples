@@ -3,8 +3,6 @@
 #include <cassert>
 
 #include <glm/glm.hpp>
-// #include <glm/gtc/matrix_transform.hpp>
-// #include <glm/gtc/matrix_inverse.hpp>
 
 #include <glbinding/gl/gl.h>
 
@@ -56,7 +54,6 @@ void AbstractParticleTechnique::initialize(const std::string & vertexShaderSourc
     m_color->setParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     m_color->setParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     m_color->setParameter(GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    //m_color->image2D(0, GL_RGB16F, glm::ivec2(1, 1), 0, GL_RGB, GL_FLOAT, nullptr);
     m_color->image2D(0, GL_RGBA32F, glm::ivec2(1, 1), 0, GL_RGB, GL_FLOAT, nullptr);
 
     m_fbo->bind();
@@ -90,7 +87,6 @@ void AbstractParticleTechnique::resize()
 {
     m_drawProgram->setUniform("aspect", static_cast<float>(m_viewport.x) / max(static_cast<float>(m_viewport.y), 1.f));
 
-    //m_color->image2D(0, GL_RGB16F, m_viewport, 0, GL_RGB, GL_FLOAT, nullptr);
     m_color->image2D(0, GL_RGBA32F, m_viewport, 0, GL_RGB, GL_FLOAT, nullptr);
 
     m_fbo->bind();

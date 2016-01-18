@@ -177,7 +177,6 @@ void AtomicCounter::cameraChanged()
 void AtomicCounter::targetFramebufferChanged()
 {
     m_typedRenderTargetCapability->setRenderTarget(gloperate::RenderTargetType::Depth, m_sphereFBO, gl::GLenum::GL_DEPTH_ATTACHMENT, gl::GLenum::GL_DEPTH_COMPONENT);
-    printf("framebufferChanged\n");
 }
 
 void AtomicCounter::onPaint()

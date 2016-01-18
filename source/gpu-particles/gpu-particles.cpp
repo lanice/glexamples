@@ -24,6 +24,8 @@
 #include <gloperate/painter/CameraCapability.h>
 #include <gloperate/painter/VirtualTimeCapability.h>
 
+#include "GpuParticlesInputCapability.h"
+
 #include "AbstractParticleTechnique.h"
 
 #include "ComputeShaderParticles.h"
@@ -43,6 +45,7 @@ GpuParticles::GpuParticles(ResourceManager & resourceManager, const cpplocate::M
 ,   m_viewportCapability(addCapability(new ViewportCapability()))
 ,   m_projectionCapability(addCapability(new PerspectiveProjectionCapability(m_viewportCapability)))
 ,   m_cameraCapability(addCapability(new CameraCapability(vec3(0.f, 1.f,-3.f))))
+,   m_inputCapability(addCapability(new GpuParticlesInputCapability()))
 ,   m_technique(ParticleTechnique::FragmentShaderTechnique)
 ,   m_numParticles(262144)
 ,   m_steps(1)
@@ -191,6 +194,9 @@ void GpuParticles::onPaint()
 
 void GpuParticles::step(const float delta)
 {
+    if (m_inputCapability->paused())
+        return;
+
     const float delta_stepped = delta / static_cast<float>(m_steps);
 
     for (int i = 0; i < m_steps; ++i)

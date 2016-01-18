@@ -41,15 +41,17 @@ set(sources
     ${source_path}/ComputeShaderParticles.cpp
     ${source_path}/FragmentShaderParticles.cpp
     ${source_path}/TransformFeedbackParticles.cpp
+    ${source_path}/GpuParticlesInputCapability.cpp
     ${source_path}/plugin.cpp
 )
 
 set(api_includes
     ${include_path}/gpu-particles.h
-    ${include_path}/AbstractParticleTechnique.cpp
-    ${include_path}/ComputeShaderParticles.cpp
-    ${include_path}/FragmentShaderParticles.cpp
-    ${include_path}/TransformFeedbackParticles.cpp
+    ${include_path}/AbstractParticleTechnique.h
+    ${include_path}/ComputeShaderParticles.h
+    ${include_path}/FragmentShaderParticles.h
+    ${include_path}/GpuParticlesInputCapability.h
+    ${include_path}/TransformFeedbackParticles.h
 )
 
 # Group source files

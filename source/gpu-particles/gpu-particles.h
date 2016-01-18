@@ -23,6 +23,7 @@ namespace gloperate
     class AbstractCameraCapability;
 }
 
+class GpuParticlesInputCapability;
 class AbstractParticleTechnique;
 
 
@@ -55,6 +56,7 @@ protected:
     gloperate::AbstractViewportCapability * m_viewportCapability;
     gloperate::AbstractPerspectiveProjectionCapability * m_projectionCapability;
     gloperate::AbstractCameraCapability * m_cameraCapability;
+    GpuParticlesInputCapability * m_inputCapability;
 
     /* members */
     ParticleTechnique m_technique;
@@ -69,12 +71,6 @@ protected:
     std::vector<glm::vec4> m_velocities;
 
     int m_steps;
-
-    struct Attribute
-    {
-        int moep;
-    };
-    std::vector<Attribute> m_attributes;
 
     globjects::ref_ptr<globjects::Texture> m_forces;
 };
