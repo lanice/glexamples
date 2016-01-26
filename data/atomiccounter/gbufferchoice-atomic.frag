@@ -7,7 +7,7 @@ uniform sampler2D normalSource;
 uniform sampler2D worldCoordSource;
 uniform sampler2D depthSource;
 
-uniform unsigned int frameCount;
+uniform uint frameCount;
 
 layout (binding = 0, offset = 0) uniform atomic_uint atomicCounter;
 
